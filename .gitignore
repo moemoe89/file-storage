@@ -17,3 +17,6 @@ vendor/
 
 # html
 *.html
+
+# development data
+development/minio

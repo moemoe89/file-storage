@@ -19,11 +19,12 @@ File Storage Service handles upload, list and delete related files data into sto
     - [2. Install Development Utility Tools](#2-install-development-utility-tools)
 - [Development workflow and guidelines](#development-workflow-and-guidelines)
     - [1. API](#1-api)
-    - [2. Instrumentation](#2-instrumentation)
-    - [3. Unit Test](#3-unit-test)
-    - [4. Linter](#4-linter)
-    - [5. Run the service](#5-run-the-service)
-    - [6. Test the service](#6-test-the-service)
+    - [2. Object Storage](#2-object-storage)
+    - [3. Instrumentation](#3-instrumentation)
+    - [4. Unit Test](#4-unit-test)
+    - [5. Linter](#5-linter)
+    - [6. Run the service](#6-run-the-service)
+    - [7. Test the service](#7-test-the-service)
 - [Project Structure](#project-structure)
 - [GitHub Actions CI](#github-actions-ci)
 - [Documentation](#documentation)
@@ -33,21 +34,22 @@ File Storage Service handles upload, list and delete related files data into sto
 
 ## Project Summary
 
-| Item                      | Description                                                                                                           |
-|---------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| Golang Version            | [1.19](https://golang.org/doc/go1.19)                                                                                 |
-| moq                       | [mockgen](https://github.com/golang/mock)                                                                             |
-| Linter                    | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                            |
-| Testing                   | [testing](https://golang.org/pkg/testing/) and [testify/assert](https://godoc.org/github.com/stretchr/testify/assert) |
-| API                       | [gRPC](https://grpc.io/docs/tutorials/basic/go/) and [gRPC-Gateway](https://github.com/grpc-ecosystem/grpc-gateway)   |
-| Application Architecture  | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                    |
-| Directory Structure       | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                      |
-| CI (Lint, Test, Generate) | [GitHubActions](https://github.com/features/actions)                                                                  |
-| Visualize Code Diagram    | [go-callviz](https://github.com/ofabry/go-callvis)                                                                    |
-| Sequence Diagram          | [Mermaid](https://mermaid.js.org)                                                                                     |
-| Protobuf Operations       | [buf](https://buf.build)                                                                                              |
-| Instrumentation           | [OpenTelemetry](https://opentelemetry.io) and [Jaeger](https://www.jaegertracing.io)                                  |
-| Logger                    | [zap](https://github.com/uber-go/zap)                                                                                 |
+| Item                      | Description                                                                                                          |
+|---------------------------|----------------------------------------------------------------------------------------------------------------------|
+| Golang Version            | [1.19](https://golang.org/doc/go1.19)                                                                                |
+| Object Storage            | [MinIO](https://min.io) and [minio-go](https://github.com/minio/minio-go)                                            |
+| moq                       | [mockgen](https://github.com/golang/mock)                                                                            |
+| Linter                    | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                           |
+| Testing                   | [testing](https://golang.org/pkg/testing) and [testify/assert](https://godoc.org/github.com/stretchr/testify/assert) |
+| API                       | [gRPC](https://grpc.io/docs/tutorials/basic/go) and [gRPC-Gateway](https://github.com/grpc-ecosystem/grpc-gateway)   |
+| Application Architecture  | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                   |
+| Directory Structure       | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                     |
+| CI (Lint, Test, Generate) | [GitHubActions](https://github.com/features/actions)                                                                 |
+| Visualize Code Diagram    | [go-callviz](https://github.com/ofabry/go-callvis)                                                                   |
+| Sequence Diagram          | [Mermaid](https://mermaid.js.org)                                                                                    |
+| Protobuf Operations       | [buf](https://buf.build)                                                                                             |
+| Instrumentation           | [OpenTelemetry](https://opentelemetry.io) and [Jaeger](https://www.jaegertracing.io)                                 |
+| Logger                    | [zap](https://github.com/uber-go/zap)                                                                                |
 
 
 ## Installation
@@ -119,7 +121,22 @@ make build-protoc
 make docker-protoc
 ```
 
-### 2. Instrumentation
+### 2. Object Storage
+
+Instead storing the files to disk, this project use [MinIO](https://min.io) as an Object Storage to store the files.
+You can follow the installation from the official page, or easily run this docker-compose command to setup everything including the bucket. 
+
+```sh
+$ docker-compose -f ./development/docker-compose.yml up minio
+```
+
+For create the default bucket:
+
+```sh
+$ docker-compose -f ./development/docker-compose.yml up createbuckets
+```
+
+### 3. Instrumentation
 
 This service implements [https://opentelemetry.io/](https://opentelemetry.io/) to enable instrumentation in order to measure the performance.
 The data exported to Jaeger and can be seen in the Jaeger UI [http://localhost:16686](http://localhost:16686)
@@ -130,7 +147,7 @@ For running the Jaeger exporter, easily run with docker-compose command:
 $ docker-compose -f ./development/docker-compose.yml up jaeger
 ```
 
-### 3. Unit Test
+### 4. Unit Test
 
 You can simply execute the following command to run all test cases in this service:
 
@@ -138,7 +155,7 @@ You can simply execute the following command to run all test cases in this servi
 $ make test
 ```
 
-### 4. Linter
+### 5. Linter
 
 For running the linter make sure these libraries already installed in your system:
 
@@ -151,7 +168,7 @@ Then checks the Go and Proto code style using lint can be done with this command
 $ make lint
 ```
 
-### 5. Mock
+### 6. Mock
 
 This service using Mock in some places like in the repository, usecase, pkg, etc.
 To automatically updating the mock if the interface changed, easily run with `go generate` command:
@@ -160,7 +177,7 @@ To automatically updating the mock if the interface changed, easily run with `go
 $ make mock
 ```
 
-### 5. Run the service
+### 7. Run the service
 
 For running the service, you need the database running and set up some env variables:
 
@@ -168,6 +185,11 @@ For running the service, you need the database running and set up some env varia
 # app config
 export APP_ENV=dev
 export SERVER_PORT=8080
+
+# minio config
+export MINIO_HOST=localhost:9000
+export MINIO_ACCESS_KEY_ID=minioadmin
+export MINIO_SECRET_ACCESS_KEY=minioadmin
 
 # tracing config
 export OTEL_AGENT=http://localhost:14268/api/traces
@@ -179,7 +201,7 @@ Or you can just execute the sh file:
 $ ./scripts/run.sh
 ```
 
-### 6. Test the service
+### 8. Test the service
 
 The example how to call the gRPC service written in Golang can be seen on this [example-client](scripts/example-client) file.
 
@@ -245,7 +267,7 @@ By default, HTTP server running on gRPC port + 1, if the gRPC port is 8080, then
 > 
 > `docker-compose -f ./development/docker-compose.yml up`
 >
-> Then you will have all services running like `jaeger` and run `file-storage` server.
+> Then you will have all services running like `minio`, `jaeger` and run `file-storage` server.
 
 ## Project Structure
 

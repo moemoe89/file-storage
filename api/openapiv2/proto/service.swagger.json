@@ -92,6 +92,10 @@
           "type": "string",
           "description": "The name of the target upload File when stored to storage."
         },
+        "bucket": {
+          "type": "string",
+          "description": "The bucket name of the target upload File when stored to storage."
+        },
         "file": {
           "$ref": "#/definitions/FileUpload",
           "description": "Details of the File Upload parameters."
@@ -110,9 +114,13 @@
           "type": "string",
           "description": "The ID of the uploaded File, can be use for resume the upload."
         },
-        "url": {
+        "objectName": {
           "type": "string",
-          "description": "The public URL for the uploaded File."
+          "description": "The Object name for the uploaded File."
+        },
+        "storageLocation": {
+          "type": "string",
+          "description": "The Storage location for the uploaded File."
         },
         "offset": {
           "type": "string",
@@ -124,9 +132,9 @@
           "format": "int64",
           "description": "The size of uploaded File."
         },
-        "mimeType": {
+        "contentType": {
           "type": "string",
-          "description": "MIME Type of uploaded File."
+          "description": "Content Type of uploaded File."
         }
       },
       "title": "UploadResponse"
@@ -144,12 +152,12 @@
     "Validation": {
       "type": "object",
       "properties": {
-        "mimeTypes": {
+        "contentTypes": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "The MIME Types need to pass."
+          "description": "The Content Types need to pass."
         },
         "maxSize": {
           "type": "string",
@@ -181,6 +189,7 @@
         "details": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
         }

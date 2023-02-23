@@ -90,6 +90,8 @@ func (m *UploadRequest) validate(all bool) error {
 
 	// no validation rules for Filename
 
+	// no validation rules for Bucket
+
 	switch v := m.Detail.(type) {
 	case *UploadRequest_File:
 		if v == nil {
@@ -454,13 +456,15 @@ func (m *UploadResponse) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for Url
+	// no validation rules for ObjectName
+
+	// no validation rules for StorageLocation
 
 	// no validation rules for Offset
 
 	// no validation rules for Size
 
-	// no validation rules for MimeType
+	// no validation rules for ContentType
 
 	if len(errors) > 0 {
 		return UploadResponseMultiError(errors)
