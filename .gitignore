@@ -1,0 +1,19 @@
+# test
+.coverage
+.godog
+
+# os x files
+*.DS_Store
+
+# log
+*.log
+
+# binary
+main
+file-storage
+
+# vendor
+vendor/
+
+# html
+*.html

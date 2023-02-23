@@ -1,0 +1,210 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "File Storage",
+    "version": "0.1"
+  },
+  "tags": [
+    {
+      "name": "FileStorageService"
+    }
+  ],
+  "host": "localhost:8081",
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/upload": {
+      "post": {
+        "summary": "Upload uploads file to storage both request and response as stream.",
+        "operationId": "FileStorageService_Upload",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/UploadResponse"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of UploadResponse"
+            }
+          },
+          "400": {
+            "description": "Returned when the request parameters are invalid.",
+            "schema": {}
+          },
+          "401": {
+            "description": "Returned when the request lacks valid authentication credentials.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the user does not have permission to access the resource.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Returned when the server encountered an unexpected condition that prevented it from fulfilling the request.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " (streaming inputs)",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UploadRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FileStorageService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "FileUpload": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "string",
+          "format": "byte",
+          "description": "The byte of the File."
+        },
+        "offset": {
+          "type": "string",
+          "format": "int64",
+          "description": "The offset of the File."
+        }
+      },
+      "title": "FileUpload"
+    },
+    "UploadRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/UploadType",
+          "description": "The upload type, can be from File or URL."
+        },
+        "validation": {
+          "$ref": "#/definitions/Validation",
+          "description": "The validation need to pass for the File."
+        },
+        "filename": {
+          "type": "string",
+          "description": "The name of the target upload File when stored to storage."
+        },
+        "file": {
+          "$ref": "#/definitions/FileUpload",
+          "description": "Details of the File Upload parameters."
+        },
+        "url": {
+          "type": "string",
+          "description": "Details of the URL Upload parameters."
+        }
+      },
+      "title": "UploadRequest"
+    },
+    "UploadResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The ID of the uploaded File, can be use for resume the upload."
+        },
+        "url": {
+          "type": "string",
+          "description": "The public URL for the uploaded File."
+        },
+        "offset": {
+          "type": "string",
+          "format": "int64",
+          "description": "The offset of the uploaded File."
+        },
+        "size": {
+          "type": "string",
+          "format": "int64",
+          "description": "The size of uploaded File."
+        },
+        "mimeType": {
+          "type": "string",
+          "description": "MIME Type of uploaded File."
+        }
+      },
+      "title": "UploadResponse"
+    },
+    "UploadType": {
+      "type": "string",
+      "enum": [
+        "UPLOAD_TYPE_UNSPECIFIED",
+        "UPLOAD_TYPE_FILE",
+        "UPLOAD_TYPE_URL"
+      ],
+      "default": "UPLOAD_TYPE_UNSPECIFIED",
+      "description": "UploadType is type when do Upload.\n\n - UPLOAD_TYPE_UNSPECIFIED: UPLOAD_TYPE_UNSPECIFIED.\n - UPLOAD_TYPE_FILE: UPLOAD_TYPE_FILE.\n - UPLOAD_TYPE_URL: UPLOAD_TYPE_URL."
+    },
+    "Validation": {
+      "type": "object",
+      "properties": {
+        "mimeTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The MIME Types need to pass."
+        },
+        "maxSize": {
+          "type": "string",
+          "format": "int64",
+          "description": "Max size of the File in byte."
+        }
+      },
+      "title": "Validation"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+// service
+syntax = "proto3";
+
+// Import https://github.com/googleapis/googleapis/blob/master/google/api/annotations.proto.
+import "google/api/annotations.proto";
+// Import https://github.com/grpc-ecosystem/grpc-gateway/blob/main/protoc-gen-openapiv2/options/annotations.proto.
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+// Target of Go package.
+option go_package = "github.com/moemoe89/file-storage/api/go/grpc";
+
+// UploadType is type when do Upload.
+enum UploadType {
+  // UPLOAD_TYPE_UNSPECIFIED.
+  UPLOAD_TYPE_UNSPECIFIED = 0;
+  // UPLOAD_TYPE_FILE.
+  UPLOAD_TYPE_FILE = 1;
+  // UPLOAD_TYPE_URL.
+  UPLOAD_TYPE_URL= 2;
+}
+
+// FileStorageService is a service that handles File Storage data.
+service FileStorageService {
+  // Upload uploads file to storage both request and response as stream.
+  rpc Upload(stream UploadRequest) returns (stream UploadResponse) {
+    option (google.api.http) = {
+      post: "/v1/upload",
+      body: "*",
+    };
+  }
+}
+
+// UploadRequest
+message UploadRequest {
+  // The upload type, can be from File or URL.
+  UploadType type = 1;
+  // The validation need to pass for the File.
+  Validation validation = 2;
+  // The name of the target upload File when stored to storage.
+  string filename = 3;
+  // The detail of upload type
+  oneof detail {
+    // Details of the File Upload parameters.
+    FileUpload file = 16;
+    // Details of the URL Upload parameters.
+    string url = 17;
+  }
+}
+
+// FileUpload
+message FileUpload {
+  // The byte of the File.
+  bytes data = 1;
+  // The offset of the File.
+  int64 offset = 2;
+}
+
+// Validation
+message Validation {
+  // The MIME Types need to pass.
+  repeated string mime_types = 1;
+  // Max size of the File in byte.
+  int64 max_size = 2;
+}
+
+// UploadResponse
+message UploadResponse {
+  // The ID of the uploaded File, can be use for resume the upload.
+  string id = 1;
+  // The public URL for the uploaded File.
+  string url = 2;
+  // The offset of the uploaded File.
+  int64 offset = 3;
+  // The size of uploaded File.
+  int64 size = 4;
+  // MIME Type of uploaded File.
+  string mime_type = 5;
+}

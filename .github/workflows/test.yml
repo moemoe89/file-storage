@@ -1,0 +1,54 @@
+name: Test
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '>=1.19.x'
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-golang-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-golang-
+      - name: Run Unit Test
+        run: |
+          make test
+      - name: Build Badge
+        run: |
+          TOTAL=$(go tool cover -func=.coverage/internal.mockless.coverage | awk -F" " '/total:/ {print $3}')
+
+          if (( $(echo "${TOTAL%\%} >= 80" | bc -l) )) ; then
+              COLOR=brightgreen
+          elif (( $(echo "${TOTAL%\%} >= 70" | bc -l) )); then
+              COLOR=yellowgreen
+          elif (( $(echo "${TOTAL%\%} >= 60" | bc -l) )); then
+              COLOR=yellow
+          elif (( $(echo "${TOTAL%\%} > 50" | bc -l) )); then
+              COLOR=orange
+          elif (( $(echo "${TOTAL%\%} <= 50" | bc -l) )); then
+              COLOR=red
+          fi
+
+          BADGE="<img src=\"https://img.shields.io/badge/coverage-${TOTAL}25-${COLOR}\">"
+
+          sed -i "/<!-- start-coverage -->/,/<!-- end-coverage -->/ s|>.*<|>${BADGE}<|" README.md
+      - name: Upload readme
+        uses: actions/upload-artifact@v3
+        with:
+          name: readme-from-test
+          path: README.md
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-coverage-report
+          path: .coverage/html
