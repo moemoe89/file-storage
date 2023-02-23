@@ -17,6 +17,12 @@ import (
 
 // Upload uploads file to storage both request and response as stream.
 func (h *fileStorageHandler) Upload(stream rpc.FileStorageService_UploadServer) error { //nolint:funlen
+	// Initialize context from stream Context.
+	var ctx = stream.Context()
+
+	ctx, span := h.trace.StartSpan(ctx, "Handler.Upload", nil)
+	defer span.End()
+
 	// Initialize diskstorage package.
 	f, err := diskstorage.New()
 	if err != nil {
@@ -24,9 +30,6 @@ func (h *fileStorageHandler) Upload(stream rpc.FileStorageService_UploadServer) 
 	}
 
 	fd := &fileData{id: uuid.New().String(), firstChunk: true}
-
-	// Initialize context from stream Context.
-	var ctx = stream.Context()
 
 	for {
 		// Handle if the Context is Done.
