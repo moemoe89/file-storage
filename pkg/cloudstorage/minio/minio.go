@@ -73,7 +73,7 @@ func (m *minioClient) Upload(
 		ctx, bucket, object, bytes.NewReader(buf.Bytes()), fileSize, minio.PutObjectOptions{},
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to upload file: %w", err)
+		return nil, fmt.Errorf("failed to upload object: %w", err)
 	}
 
 	return &cloudstorage.CloudFile{
@@ -113,8 +113,25 @@ func (m *minioClient) checkBucket(ctx context.Context, bucket string) error {
 func (m *minioClient) Delete(ctx context.Context, bucket, object string) error {
 	err := m.Client.RemoveObject(ctx, bucket, object, minio.RemoveObjectOptions{})
 	if err != nil {
-		return fmt.Errorf("failed to delete file: %w", err)
+		return fmt.Errorf("failed to delete object: %w", err)
 	}
 
 	return nil
+}
+
+// ListObjects lists the objects by given bucket from Cloud Storage.
+func (m *minioClient) ListObjects(ctx context.Context, bucket string) ([]string, error) {
+	objects := make([]string, 0)
+
+	objectCh := m.Client.ListObjects(ctx, bucket, minio.ListObjectsOptions{})
+
+	for object := range objectCh {
+		if object.Err != nil {
+			return nil, fmt.Errorf("failed to get list object: %w", object.Err)
+		}
+
+		objects = append(objects, object.Key)
+	}
+
+	return objects, nil
 }
