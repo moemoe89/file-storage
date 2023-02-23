@@ -41,14 +41,6 @@ var diagrams = []FocusDiagram{
 		Name:  "handler",
 		Focus: "internal/adapters/grpchandler",
 	},
-	{
-		Name:  "usecases",
-		Focus: "internal/usecases",
-	},
-	{
-		Name:  "datastore",
-		Focus: "internal/infrastructure/datastore",
-	},
 }
 
 func main() {
