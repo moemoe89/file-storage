@@ -38,6 +38,8 @@ message UploadRequest {
   Validation validation = 2;
   // The name of the target upload File when stored to storage.
   string filename = 3;
+  // The bucket name of the target upload File when stored to storage.
+  string bucket = 4;
   // The detail of upload type
   oneof detail {
     // Details of the File Upload parameters.
@@ -57,8 +59,8 @@ message FileUpload {
 
 // Validation
 message Validation {
-  // The MIME Types need to pass.
-  repeated string mime_types = 1;
+  // The Content Types need to pass.
+  repeated string content_types = 1;
   // Max size of the File in byte.
   int64 max_size = 2;
 }
@@ -67,12 +69,14 @@ message Validation {
 message UploadResponse {
   // The ID of the uploaded File, can be use for resume the upload.
   string id = 1;
-  // The public URL for the uploaded File.
-  string url = 2;
+  // The Object name for the uploaded File.
+  string object_name = 2;
+  // The Storage location for the uploaded File.
+  string storage_location = 3;
   // The offset of the uploaded File.
-  int64 offset = 3;
+  int64 offset = 4;
   // The size of uploaded File.
-  int64 size = 4;
-  // MIME Type of uploaded File.
-  string mime_type = 5;
+  int64 size = 5;
+  // Content Type of uploaded File.
+  string content_type = 6;
 }

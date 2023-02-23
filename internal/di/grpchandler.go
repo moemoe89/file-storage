@@ -6,5 +6,5 @@ import (
 
 // GetFileStorageGRPCHandler returns FileStorageServiceServer handler.
 func GetFileStorageGRPCHandler() grpchandler.FileStorageServiceServer {
-	return grpchandler.NewFileStorageHandler()
+	return grpchandler.NewFileStorageHandler(GetMinio())
 }
