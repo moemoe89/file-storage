@@ -28,6 +28,12 @@ service FileStorageService {
       body: "*",
     };
   }
+  // List lists the files by given bucket name.
+  rpc List(ListRequest) returns (ListResponse) {
+    option (google.api.http) = {
+      get: "/v1/list",
+    };
+  }
   // Delete deletes the file by given bucket and object name.
   rpc Delete(DeleteRequest) returns (Empty) {
     option (google.api.http) = {
@@ -98,4 +104,16 @@ message DeleteRequest {
   string object = 1;
   // The Bucket name of target delete File.
   string bucket = 2;
+}
+
+// ListRequest
+message ListRequest {
+  // The Bucket name of target delete File.
+  string bucket = 1;
+}
+
+// ListResponse
+message ListResponse {
+  // The list files from given bucket.
+  repeated string files = 1;
 }

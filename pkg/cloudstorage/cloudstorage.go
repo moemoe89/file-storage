@@ -26,6 +26,8 @@ type Client interface {
 	// Upload uploads the file to the Cloud Storage given by bucket, object
 	// and return the CloudFile data structure.
 	Upload(ctx context.Context, file io.Reader, bucket, object string, expires time.Time) (*CloudFile, error)
+	// ListObjects lists the objects by given bucket from Cloud Storage.
+	ListObjects(ctx context.Context, bucket string) ([]string, error)
 	// Delete deletes the given bucket and object from Cloud Storage.
 	Delete(ctx context.Context, bucket, object string) error
 }

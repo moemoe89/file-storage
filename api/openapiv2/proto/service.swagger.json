@@ -55,6 +55,38 @@
         ]
       }
     },
+    "/v1/list": {
+      "get": {
+        "summary": "List lists the files by given bucket name.",
+        "operationId": "FileStorageService_List",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "bucket",
+            "description": "The Bucket name of target delete File.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "FileStorageService"
+        ]
+      }
+    },
     "/v1/upload": {
       "post": {
         "summary": "Upload uploads file to storage both request and response as stream.",
@@ -119,6 +151,19 @@
         }
       },
       "title": "FileUpload"
+    },
+    "ListResponse": {
+      "type": "object",
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The list files from given bucket."
+        }
+      },
+      "title": "ListResponse"
     },
     "UploadRequest": {
       "type": "object",
@@ -232,7 +277,6 @@
         "details": {
           "type": "array",
           "items": {
-            "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
         }
