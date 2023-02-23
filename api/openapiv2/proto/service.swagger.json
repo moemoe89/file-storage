@@ -1,17 +1,13 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "File Storage",
-    "version": "0.1"
+    "title": "proto/service.proto",
+    "version": "version not set"
   },
   "tags": [
     {
       "name": "FileStorageService"
     }
-  ],
-  "host": "localhost:8081",
-  "schemes": [
-    "http"
   ],
   "consumes": [
     "application/json"
@@ -39,22 +35,6 @@
               },
               "title": "Stream result of UploadResponse"
             }
-          },
-          "400": {
-            "description": "Returned when the request parameters are invalid.",
-            "schema": {}
-          },
-          "401": {
-            "description": "Returned when the request lacks valid authentication credentials.",
-            "schema": {}
-          },
-          "403": {
-            "description": "Returned when the user does not have permission to access the resource.",
-            "schema": {}
-          },
-          "500": {
-            "description": "Returned when the server encountered an unexpected condition that prevented it from fulfilling the request.",
-            "schema": {}
           },
           "default": {
             "description": "An unexpected error response.",

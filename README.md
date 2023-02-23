@@ -2,7 +2,7 @@
 
 ---
 
-[![CI Workflow](https://github.com/moemoe89/file-storage/actions/workflows/ci.yml/badge.svg)](https://github.com/moemoe89/file-storage/actions/workflows/ci.yml) <!-- start-coverage --><img src="https://img.shields.io/badge/coverage-100%25-brightgreen"><!-- end-coverage -->
+[![CI Workflow](https://github.com/moemoe89/file-storage/actions/workflows/ci.yml/badge.svg)](https://github.com/moemoe89/file-storage/actions/workflows/ci.yml) <!-- start-coverage --><img src="https://img.shields.io/badge/coverage-0.0%25-red"><!-- end-coverage -->
 
 File Storage Service handles upload, list and delete related files data into storage.
 
@@ -305,5 +305,10 @@ such as relations with packages and types, here are some diagrams listed
 generated automatically using [https://github.com/ofabry/go-callvis](https://github.com/ofabry/go-callvis)
 
 <!-- start diagram doc -->
+1. [main diagram](docs/diagrams/main.png)
+2. [di diagram](docs/diagrams/di.png)
+3. [handler diagram](docs/diagrams/handler.png)
+4. [usecases diagram](docs/diagrams/usecases.png)
+5. [datastore diagram](docs/diagrams/datastore.png)
 
 <!-- end diagram doc -->
