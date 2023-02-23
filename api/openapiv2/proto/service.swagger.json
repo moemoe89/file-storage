@@ -16,6 +16,45 @@
     "application/json"
   ],
   "paths": {
+    "/v1/delete": {
+      "delete": {
+        "summary": "Delete deletes the file by given bucket and object name.",
+        "operationId": "FileStorageService_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Empty"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "object",
+            "description": "The Object name of target delete File.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "bucket",
+            "description": "The Bucket name of target delete File.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "FileStorageService"
+        ]
+      }
+    },
     "/v1/upload": {
       "post": {
         "summary": "Upload uploads file to storage both request and response as stream.",
@@ -61,6 +100,10 @@
     }
   },
   "definitions": {
+    "Empty": {
+      "type": "object",
+      "title": "Empty"
+    },
     "FileUpload": {
       "type": "object",
       "properties": {
@@ -189,7 +232,6 @@
         "details": {
           "type": "array",
           "items": {
-            "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
         }
