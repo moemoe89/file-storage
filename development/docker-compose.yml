@@ -1,0 +1,37 @@
+version: '3.7'
+services:
+  # file-storage
+  file-storage:
+    image: golang:1.19
+    expose:
+      - "8080:8080" # gRPC
+      - "8081:8081" # HTTP
+    tty: true
+    restart: always
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      APP_ENV: dev
+      SERVER_PORT: 8080
+      OTEL_AGENT: http://jaeger:14268/api/traces
+    volumes:
+      - ..:/app
+    working_dir: /app
+    command: |
+      go run ./cmd/main.go
+    depends_on:
+      - jaeger
+    networks:
+      - fullstack
+  # jaeger
+  jaeger:
+    image: jaegertracing/all-in-one:1.42.0
+    ports:
+      - "14268:14268"   # jaeger-collector HTTP server (tracer provider)
+      - "16686:16686"   # HTTP server (browser UI)
+    networks:
+      - fullstack
+networks:
+  fullstack:
+    driver: bridge
