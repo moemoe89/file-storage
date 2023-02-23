@@ -28,6 +28,17 @@ service FileStorageService {
       body: "*",
     };
   }
+  // Delete deletes the file by given bucket and object name.
+  rpc Delete(DeleteRequest) returns (Empty) {
+    option (google.api.http) = {
+      delete: "/v1/delete",
+    };
+  }
+}
+
+// Empty
+message Empty {
+
 }
 
 // UploadRequest
@@ -79,4 +90,12 @@ message UploadResponse {
   int64 size = 5;
   // Content Type of uploaded File.
   string content_type = 6;
+}
+
+// DeleteRequest
+message DeleteRequest {
+  // The Object name of target delete File.
+  string object = 1;
+  // The Bucket name of target delete File.
+  string bucket = 2;
 }

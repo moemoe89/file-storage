@@ -24,6 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type FileStorageServiceClient interface {
 	// Upload uploads file to storage both request and response as stream.
 	Upload(ctx context.Context, opts ...grpc.CallOption) (FileStorageService_UploadClient, error)
+	// Delete deletes the file by given bucket and object name.
+	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type fileStorageServiceClient struct {
@@ -65,12 +67,23 @@ func (x *fileStorageServiceUploadClient) Recv() (*UploadResponse, error) {
 	return m, nil
 }
 
+func (c *fileStorageServiceClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, "/FileStorageService/Delete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FileStorageServiceServer is the server API for FileStorageService service.
 // All implementations must embed UnimplementedFileStorageServiceServer
 // for forward compatibility
 type FileStorageServiceServer interface {
 	// Upload uploads file to storage both request and response as stream.
 	Upload(FileStorageService_UploadServer) error
+	// Delete deletes the file by given bucket and object name.
+	Delete(context.Context, *DeleteRequest) (*Empty, error)
 	mustEmbedUnimplementedFileStorageServiceServer()
 }
 
@@ -80,6 +93,9 @@ type UnimplementedFileStorageServiceServer struct {
 
 func (UnimplementedFileStorageServiceServer) Upload(FileStorageService_UploadServer) error {
 	return status.Errorf(codes.Unimplemented, "method Upload not implemented")
+}
+func (UnimplementedFileStorageServiceServer) Delete(context.Context, *DeleteRequest) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedFileStorageServiceServer) mustEmbedUnimplementedFileStorageServiceServer() {}
 
@@ -120,13 +136,36 @@ func (x *fileStorageServiceUploadServer) Recv() (*UploadRequest, error) {
 	return m, nil
 }
 
+func _FileStorageService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FileStorageServiceServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FileStorageService/Delete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FileStorageServiceServer).Delete(ctx, req.(*DeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FileStorageService_ServiceDesc is the grpc.ServiceDesc for FileStorageService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var FileStorageService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "FileStorageService",
 	HandlerType: (*FileStorageServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Delete",
+			Handler:    _FileStorageService_Delete_Handler,
+		},
+	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "Upload",
