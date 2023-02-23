@@ -22,8 +22,8 @@ File Storage Service handles upload, list and delete related files data into sto
     - [2. Instrumentation](#2-instrumentation)
     - [3. Unit Test](#3-unit-test)
     - [4. Linter](#4-linter)
-    - [6. Run the service](#6-run-the-service)
-    - [7. Test the service](#7-test-the-service)
+    - [5. Run the service](#5-run-the-service)
+    - [6. Test the service](#6-test-the-service)
 - [Project Structure](#project-structure)
 - [GitHub Actions CI](#github-actions-ci)
 - [Documentation](#documentation)
@@ -160,7 +160,7 @@ To automatically updating the mock if the interface changed, easily run with `go
 $ make mock
 ```
 
-### 10. Run the service
+### 5. Run the service
 
 For running the service, you need the database running and set up some env variables:
 
@@ -169,28 +169,8 @@ For running the service, you need the database running and set up some env varia
 export APP_ENV=dev
 export SERVER_PORT=8080
 
-# master db config
-export POSTGRES_USER_MASTER=test
-export POSTGRES_PASSWORD_MASTER=test
-export POSTGRES_HOST_MASTER=localhost
-export POSTGRES_PORT_MASTER=5432
-export POSTGRES_DB_MASTER=test
-
-# slave db config
-export POSTGRES_USER_SLAVE=test
-export POSTGRES_PASSWORD_SLAVE=test
-export POSTGRES_HOST_SLAVE=localhost
-export POSTGRES_PORT_SLAVE=5433
-export POSTGRES_DB_SLAVE=test
-
-# use replica config
-export IS_REPLICA=true
-
 # tracing config
 export OTEL_AGENT=http://localhost:14268/api/traces
-
-# cache config
-export REDIS_HOST=localhost:6379
 ```
 
 Or you can just execute the sh file:
@@ -199,7 +179,7 @@ Or you can just execute the sh file:
 $ ./scripts/run.sh
 ```
 
-### 11. Test the service
+### 6. Test the service
 
 The example how to call the gRPC service written in Golang can be seen on this [example-client](scripts/example-client) file.
 
@@ -308,7 +288,5 @@ generated automatically using [https://github.com/ofabry/go-callvis](https://git
 1. [main diagram](docs/diagrams/main.png)
 2. [di diagram](docs/diagrams/di.png)
 3. [handler diagram](docs/diagrams/handler.png)
-4. [usecases diagram](docs/diagrams/usecases.png)
-5. [datastore diagram](docs/diagrams/datastore.png)
 
 <!-- end diagram doc -->
