@@ -14,6 +14,7 @@ File Storage Service handles upload, list and delete related files data into sto
 
 - [Table of Contents](#table-of-contents)
 - [Project Summary](#project-summary)
+- [Architecture Diagram](#architecture-diagram)
 - [Installation](#installation)
     - [1. Set Up Golang Development Environment](#1-set-up-golang-development-environment)
     - [2. Install Development Utility Tools](#2-install-development-utility-tools)
@@ -50,6 +51,15 @@ File Storage Service handles upload, list and delete related files data into sto
 | Protobuf Operations       | [buf](https://buf.build)                                                                                             |
 | Instrumentation           | [OpenTelemetry](https://opentelemetry.io) and [Jaeger](https://www.jaegertracing.io)                                 |
 | Logger                    | [zap](https://github.com/uber-go/zap)                                                                                |
+
+
+## Architecture Diagram
+
+---
+
+[Excalidraw link](https://excalidraw.com/#json=pNHn6o1XiBXnO1eHjWQt-,2NNfHHi0WMFKgrCWpe9fdQ)
+
+![Architecture-Diagram](https://user-images.githubusercontent.com/7221739/221066779-1f40a578-566a-445f-8bc4-99e7da154532.png)
 
 
 ## Installation
@@ -294,7 +304,6 @@ This project has GitHub Actions CI to do some automation such as:
 * [lint](.github/workflows/lint.yml): check the code style.
 * [test](.github/workflows/test.yml): run unit testing and uploaded code coverage artifact.
 * [generate-proto](.github/workflows/generate-proto.yml): generates protobuf files.
-* [generate-rpc-diagram](.github/workflows/generate-rpc-diagram.yml): generates RPC sequence diagram.
 * [generate-diagram](.github/workflows/generate-diagram.yml): generates graph code visualization.
 * [push-file](.github/workflows/push-file.yml): commit and push generated proto, diagram as github-actions[bot] user.
 
