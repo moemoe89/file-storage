@@ -36,9 +36,11 @@ const (
 )
 
 var flagMap = map[string]struct{}{
-	"bucket":   {},
-	"source":   {},
-	"filename": {},
+	"bucket":       {},
+	"source":       {},
+	"filename":     {},
+	"content_type": {},
+	"max_size":     {},
 }
 
 var (

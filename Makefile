@@ -44,6 +44,9 @@ mock:
 	@echo "\n>>> Run Generate Mock\n"
 	go generate ./...
 
+build-cli:
+	go build -o fs-store ./cmd/cli
+
 build-protoc:
 	docker build -t file-storage-protoc -f build/protoc/Dockerfile .
 

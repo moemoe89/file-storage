@@ -11,6 +11,7 @@
 # binary
 main
 file-storage
+fs-store
 
 # vendor
 vendor/
