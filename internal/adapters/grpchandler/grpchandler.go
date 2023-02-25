@@ -2,9 +2,8 @@ package grpchandler
 
 import (
 	rpc "github.com/moemoe89/file-storage/api/go/grpc"
-	"github.com/moemoe89/file-storage/pkg/cloudstorage"
+	"github.com/moemoe89/file-storage/internal/usecases"
 	"github.com/moemoe89/file-storage/pkg/grpchealth"
-	"github.com/moemoe89/file-storage/pkg/trace"
 
 	health "google.golang.org/grpc/health/grpc_health_v1"
 )
@@ -16,16 +15,15 @@ type FileStorageServiceServer interface {
 }
 
 // NewFileStorageHandler returns a new gRPC handler that implements FileStorageServiceServer interface.
-func NewFileStorageHandler(minio cloudstorage.Client, trace trace.Tracer) FileStorageServiceServer {
-	return &fileStorageHandler{minio: minio, trace: trace}
+func NewFileStorageHandler(uc usecases.FileStorageUsecase) FileStorageServiceServer {
+	return &fileStorageHandler{uc: uc}
 }
 
 // fileStorageHandler is a struct for handler.
 type fileStorageHandler struct {
 	rpc.UnimplementedFileStorageServiceServer
 	grpchealth.HealthChecker
-	trace trace.Tracer
-	minio cloudstorage.Client
+	uc usecases.FileStorageUsecase
 }
 
 type fileData struct {
