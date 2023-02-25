@@ -26,6 +26,7 @@ File Storage Service handles upload, list and delete related files data into sto
     - [5. Linter](#5-linter)
     - [6. Run the service](#6-run-the-service)
     - [7. Test the service](#7-test-the-service)
+- [CLI](#cli)
 - [Project Structure](#project-structure)
 - [GitHub Actions CI](#github-actions-ci)
 - [Documentation](#documentation)
@@ -43,6 +44,7 @@ File Storage Service handles upload, list and delete related files data into sto
 | Linter                    | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                           |
 | Testing                   | [testing](https://golang.org/pkg/testing) and [testify/assert](https://godoc.org/github.com/stretchr/testify/assert) |
 | API                       | [gRPC](https://grpc.io/docs/tutorials/basic/go) and [gRPC-Gateway](https://github.com/grpc-ecosystem/grpc-gateway)   |
+| CLI                       | [flag](https://pkg.go.dev/flag)   |
 | Application Architecture  | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                   |
 | Directory Structure       | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                     |
 | CI (Lint, Test, Generate) | [GitHubActions](https://github.com/features/actions)                                                                 |
@@ -57,9 +59,9 @@ File Storage Service handles upload, list and delete related files data into sto
 
 ---
 
-[Excalidraw link](https://excalidraw.com/#json=pNHn6o1XiBXnO1eHjWQt-,2NNfHHi0WMFKgrCWpe9fdQ)
+[Excalidraw link](https://excalidraw.com/#json=XUYiHOOC3TodzZpiz6Oi2,Y471qS6LzUQt4bDePRhGrA)
 
-![Architecture-Diagram](https://user-images.githubusercontent.com/7221739/221066779-1f40a578-566a-445f-8bc4-99e7da154532.png)
+![Architecture-Diagram](https://user-images.githubusercontent.com/7221739/221344429-26546635-44f8-40d1-821f-f044c32ec220.png)
 
 
 ## Installation
@@ -277,7 +279,57 @@ By default, HTTP server running on gRPC port + 1, if the gRPC port is 8080, then
 > 
 > `docker-compose -f ./development/docker-compose.yml up`
 >
-> Then you will have all services running like `minio`, `jaeger` and run `file-storage` server.
+> Then you will have all services running like `minio`, `createbuckets`, jaeger` and run `file-storage` server.
+
+## CLI
+
+This project has CLI to simplify interact with the File-Storage server. You need to build the binary before running the command:
+
+```shell
+make build-cli
+```
+
+You will have a binary named `fs-store`.
+
+> NOTE:
+> If the binary is not in your PATH, you need to run it directly like this: ./fs-store list-files
+
+
+Thenn, here are several commands available:
+
+#### File Upload
+```shell
+// Use default bucket, upload from file path
+fs-store file-upload /path/test.txt
+
+// Use default bucket, upload from URL
+fs-store -source=url file-upload /path/test.txt
+
+// Use specific bucket
+fs-store -bucket=my-bucket file-upload /path/test.txt
+
+// Use validations
+fs-store -content_type=image/jpeg,image/png -max_size=1000 file-upload /path/test.txt
+```
+
+#### List File
+```shell
+// Use default bucket
+file-storage list-files
+
+// With specific bucket
+file-storage -bucket=my-bucket list-files
+```
+
+#### File Upload
+```shell
+// Use default bucket
+file-storage file-delete test.txt
+
+// With specific bucket
+file-storage -bucket=my-bucket file-delete test.txt
+```
+
 
 ## Project Structure
 
