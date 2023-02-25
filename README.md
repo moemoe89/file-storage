@@ -44,7 +44,7 @@ File Storage Service handles upload, list and delete related files data into sto
 | Linter                    | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                           |
 | Testing                   | [testing](https://golang.org/pkg/testing) and [testify/assert](https://godoc.org/github.com/stretchr/testify/assert) |
 | API                       | [gRPC](https://grpc.io/docs/tutorials/basic/go) and [gRPC-Gateway](https://github.com/grpc-ecosystem/grpc-gateway)   |
-| CLI                       | [flag](https://pkg.go.dev/flag)   |
+| CLI                       | [flag](https://pkg.go.dev/flag)                                                                                      |
 | Application Architecture  | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                   |
 | Directory Structure       | [Standard Go Project Layout](https://github.com/golang-standards/project-layout)                                     |
 | CI (Lint, Test, Generate) | [GitHubActions](https://github.com/features/actions)                                                                 |
@@ -59,10 +59,9 @@ File Storage Service handles upload, list and delete related files data into sto
 
 ---
 
-[Excalidraw link](https://excalidraw.com/#json=XUYiHOOC3TodzZpiz6Oi2,Y471qS6LzUQt4bDePRhGrA)
+[Excalidraw link](https://excalidraw.com/#json=mPOLz5PASdszqHjpCEPaW,bCjI5mVzKrc5-Fg5zgnseg)
 
-![Architecture-Diagram](https://user-images.githubusercontent.com/7221739/221344429-26546635-44f8-40d1-821f-f044c32ec220.png)
-
+![Architecture-Diagram](https://user-images.githubusercontent.com/7221739/221348267-58acfa3b-8d11-46e3-b4b2-b1426483f375.png)
 
 ## Installation
 
@@ -146,6 +145,12 @@ For create the default bucket:
 
 ```sh
 $ docker-compose -f ./development/docker-compose.yml up createbuckets
+```
+
+For create the backup:
+
+```sh
+$ docker-compose -f ./development/docker-compose.yml up createbackup
 ```
 
 ### 3. Instrumentation
