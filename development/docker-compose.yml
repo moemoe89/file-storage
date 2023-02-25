@@ -14,6 +14,9 @@ services:
     environment:
       APP_ENV: dev
       SERVER_PORT: 8080
+      MINIO_HOST: minio:9000
+      MINIO_ACCESS_KEY_ID: minioadmin
+      MINIO_SECRET_ACCESS_KEY: minioadmin
       OTEL_AGENT: http://jaeger:14268/api/traces
     volumes:
       - ..:/app
