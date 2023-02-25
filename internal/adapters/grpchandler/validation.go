@@ -4,6 +4,10 @@ import "fmt"
 
 // validateContentType validates the file Content-Type with expected values from the request.
 func validateContentType(targetTypes []string, contentType string) error {
+	if len(targetTypes) == 0 {
+		return nil
+	}
+
 	matchType := false
 
 	for _, targetType := range targetTypes {

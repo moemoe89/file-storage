@@ -111,7 +111,12 @@ func (m *minioClient) checkBucket(ctx context.Context, bucket string) error {
 
 // Delete deletes the given bucket and object from Cloud Storage.
 func (m *minioClient) Delete(ctx context.Context, bucket, object string) error {
-	err := m.Client.RemoveObject(ctx, bucket, object, minio.RemoveObjectOptions{})
+	_, err := m.Client.StatObject(ctx, bucket, object, minio.GetObjectOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to get object: %w", err)
+	}
+
+	err = m.Client.RemoveObject(ctx, bucket, object, minio.RemoveObjectOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to delete object: %w", err)
 	}
