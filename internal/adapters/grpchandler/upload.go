@@ -20,9 +20,6 @@ func (h *fileStorageHandler) Upload(stream rpc.FileStorageService_UploadServer) 
 	// Initialize context from stream Context.
 	var ctx = stream.Context()
 
-	ctx, span := h.trace.StartSpan(ctx, "Handler.Upload", nil)
-	defer span.End()
-
 	// Initialize diskstorage package.
 	f, err := diskstorage.New()
 	if err != nil {
@@ -131,7 +128,7 @@ func (h *fileStorageHandler) uploadFromURL(
 	fd.size = int64(len(fileUpload))
 
 	// Uploads to Google Cloud Storage.
-	cloudFile, err := h.minio.Upload(ctx, bytes.NewReader(fileUpload), fd.bucket, fd.filename, time.Time{})
+	cloudFile, err := h.uc.Upload(ctx, bytes.NewReader(fileUpload), fd.bucket, fd.filename, time.Time{})
 	if err != nil {
 		return err
 	}
@@ -159,7 +156,7 @@ func (h *fileStorageHandler) endStream(
 	fd.size = fd.offset
 
 	// Uploads to Google Cloud Storage.
-	cloudFile, err := h.minio.Upload(ctx, fileUpload, fd.bucket, fd.filename, time.Time{})
+	cloudFile, err := h.uc.Upload(ctx, fileUpload, fd.bucket, fd.filename, time.Time{})
 	if err != nil {
 		return err
 	}

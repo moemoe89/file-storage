@@ -50,6 +50,21 @@ func (mr *GoMockClientMockRecorder) Delete(ctx, bucket, object interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*GoMockClient)(nil).Delete), ctx, bucket, object)
 }
 
+// ListObjects mocks base method.
+func (m *GoMockClient) ListObjects(ctx context.Context, bucket string) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListObjects", ctx, bucket)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListObjects indicates an expected call of ListObjects.
+func (mr *GoMockClientMockRecorder) ListObjects(ctx, bucket interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListObjects", reflect.TypeOf((*GoMockClient)(nil).ListObjects), ctx, bucket)
+}
+
 // Upload mocks base method.
 func (m *GoMockClient) Upload(ctx context.Context, file io.Reader, bucket, object string, expires time.Time) (*CloudFile, error) {
 	m.ctrl.T.Helper()
