@@ -60,6 +60,24 @@ services:
       "
     networks:
       - fullstack
+  # createbackup
+  createbackup:
+    image: minio/mc:RELEASE.2023-02-16T19-20-11Z
+    depends_on:
+      - minio
+    volumes:
+      - ./minio/backup:/backup
+    entrypoint: >
+      sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 minioadmin minioadmin;
+      for bucket in $(/usr/bin/mc ls myminio); do
+        echo \"Backing up \$bucket...\";
+        /usr/bin/mc cp --recursive myminio/\$bucket /backup/\$bucket;
+      done;
+      exit 0;
+      "
+    networks:
+      - fullstack
   # jaeger
   jaeger:
     image: jaegertracing/all-in-one:1.42.0
