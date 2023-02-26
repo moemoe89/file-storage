@@ -1,72 +1,11 @@
-package diskstorage
+package downloadfile
 
 import (
-	"bytes"
 	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
-
-func TestWithBuffer(t *testing.T) {
-	type args struct {
-		value *bytes.Buffer
-	}
-
-	type fields struct {
-		buffer *bytes.Buffer
-	}
-
-	type test struct {
-		args    args
-		fields  fields
-		want    *bytes.Buffer
-		wantErr error
-	}
-
-	tests := map[string]func(t *testing.T) test{
-		"Successfully set buffer value": func(t *testing.T) test {
-			t.Helper()
-
-			return test{
-				args: args{
-					value: &bytes.Buffer{},
-				},
-				want:    &bytes.Buffer{},
-				wantErr: nil,
-			}
-		},
-		"Failed set buffer value": func(t *testing.T) test {
-			t.Helper()
-
-			return test{
-				args: args{
-					value: nil,
-				},
-				fields: fields{
-					buffer: &bytes.Buffer{},
-				},
-				want:    &bytes.Buffer{},
-				wantErr: errFailedSetBuffer,
-			}
-		},
-	}
-
-	for name, fn := range tests {
-		t.Run(name, func(t *testing.T) {
-			tt := fn(t)
-
-			tp := &diskStorage{
-				buffer: tt.fields.buffer,
-			}
-
-			err := WithBuffer(tt.args.value)(tp)
-
-			assert.Equal(t, tt.want, tp.buffer)
-			assert.Equal(t, tt.wantErr, err)
-		})
-	}
-}
 
 func TestWithHTTPClient(t *testing.T) {
 	type args struct {
@@ -116,7 +55,7 @@ func TestWithHTTPClient(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			tt := fn(t)
 
-			tp := &diskStorage{
+			tp := &downloadFile{
 				httpClient: tt.fields.httpClient,
 			}
 
