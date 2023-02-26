@@ -31,6 +31,7 @@ File Storage Service handles upload, list and delete related files data into sto
 - [GitHub Actions CI](#github-actions-ci)
 - [Documentation](#documentation)
   - [Visualize Code Diagram](#visualize-code-diagram)
+  - [RPC Sequence Diagram](#rpc-sequence-diagram)
 
 <!-- /code_chunk_output -->
 
@@ -380,3 +381,21 @@ generated automatically using [https://github.com/ofabry/go-callvis](https://git
 3. [handler diagram](docs/diagrams/handler.png)
 
 <!-- end diagram doc -->
+
+### RPC Sequence Diagram
+
+To help give a better understanding about reading the RPC flow
+such as relations with usecases and repositories, here are some sequence diagrams (generated automatically) listed in Markdown file and written in Mermaid JS [https://mermaid-js.github.io/mermaid/](https://mermaid-js.github.io/mermaid/) format.
+
+To generate the RPC sequence diagram, there's a Makefile command that can be use:
+
+1. Run this command to generate specific RPC `make sequence-diagram RPC=GetData`.
+2. For generates multiple RPC's, just adding the other RPC by comma `make sequence-diagram RPC=GetData,GetList`.
+3. For generates all RPC's, use wildcard * in the parameter `make sequence-diagram RPC=*`.
+
+<!-- start rpc sequence diagram doc -->
+1. [Delete RPC - Sequence Diagram](docs/sequence-diagrams/rpc/delete.md)
+2. [List RPC - Sequence Diagram](docs/sequence-diagrams/rpc/list.md)
+3. [Upload RPC - Sequence Diagram](docs/sequence-diagrams/rpc/upload.md)
+
+<!-- end rpc sequence diagram doc -->
