@@ -91,7 +91,7 @@ func (h *fileStorageHandler) Upload(stream rpc.FileStorageService_UploadServer) 
 	}
 }
 
-// assignFiledata assign furst chunk, file name, bucket and target size from request to FileData object.
+// assignFileData assign first chunk, file name, bucket and target size from request to FileData object.
 func assignFileData(chunk *rpc.UploadRequest, fd *fileData) {
 	fd.firstChunk = false
 
@@ -116,6 +116,7 @@ func (h *fileStorageHandler) uploadFromURL(
 	chunk *rpc.UploadRequest,
 	fd *fileData,
 ) error {
+	// Initialize downloadfile package.
 	df, err := downloadfile.New()
 	if err != nil {
 		return err
@@ -177,7 +178,7 @@ func sendSteam(
 	return stream.Send(&rpc.UploadResponse{
 		Id:              fd.id,
 		ObjectName:      fd.objectName,
-		StorageLocation: "",
+		StorageLocation: fd.bucket + "/" + fd.objectName,
 		Offset:          fd.offset,
 		Size:            fd.size,
 		ContentType:     fd.contentType,
