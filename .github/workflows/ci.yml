@@ -16,10 +16,14 @@ jobs:
       - lint
       - test
     uses: './.github/workflows/generate-proto.yml'
-  generate-diagram:
+  generate-rpc-diagram:
     needs:
       - lint
       - test
+    uses: './.github/workflows/generate-rpc-diagram.yml'
+  generate-diagram:
+    needs:
+      - generate-rpc-diagram
     uses: './.github/workflows/generate-diagram.yml'
   push-file:
     needs:

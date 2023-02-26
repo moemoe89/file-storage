@@ -1,4 +1,4 @@
-name: Generate Diagram
+name: Generate RPC Diagram
 
 on:
   workflow_call:
@@ -23,16 +23,13 @@ jobs:
             echo 'last commit is not a target.'
             echo "result=false" >> $GITHUB_OUTPUT
           fi
-  generate-diagram:
-    name: Generate diagram
+  generate-rpc-diagram:
+    name: Generate RPC diagram
     needs: check-commit
     if: needs.check-commit.outputs.is_generated_commit == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Fetch Entire History
-        run: |
-          git fetch --unshallow
       - uses: actions/setup-go@v3
         with:
           go-version: '>=1.19.x'
@@ -44,39 +41,21 @@ jobs:
           key: ${{ runner.os }}-golang-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-golang-
-      - name: Install Go-Callvis
-        run: |
-          git clone https://github.com/ofabry/go-callvis.git
-          cd go-callvis && make install
-      - name: Install pngquant
-        run: |
-          sudo apt-get update
-          sudo apt-get install pngquant
-      - name: Download generated RPC diagrams
-        uses: actions/download-artifact@v3
-        with:
-          name: generated-rpc-diagram
-          path: docs
       - name: Download readme
         uses: actions/download-artifact@v3
         with:
-          name: readme-from-rpc-diagram
+          name: readme-from-test
           path: .
-      - name: Generate Diagram
+      - name: Generate RPC Diagram
         run: |
-          make diagram
-      - name: Upload generated diagrams
+          make sequence-diagram RPC=\*
+      - name: Upload generated RPC diagrams
         uses: actions/upload-artifact@v3
         with:
-          name: generated-diagram
+          name: generated-rpc-diagram
           path: docs
-      - name: Upload readme diagram
-        uses: actions/upload-artifact@v3
-        with:
-          name: readme-diagram
-          path: scripts/generate-diagram
       - name: Upload readme
         uses: actions/upload-artifact@v3
         with:
-          name: readme-from-diagram
+          name: readme-from-rpc-diagram
           path: README.md
