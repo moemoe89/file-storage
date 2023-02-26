@@ -63,9 +63,9 @@ File Storage Service handles upload, list and delete related files data into sto
 
 ---
 
-[Excalidraw link](https://excalidraw.com/#json=mPOLz5PASdszqHjpCEPaW,bCjI5mVzKrc5-Fg5zgnseg)
+[Excalidraw link](https://excalidraw.com/#json=Nj7TrMA5pQPIKY4Jze8df,vygEYUvYlvnY1QSksZVAZQ)
 
-![Architecture-Diagram](https://user-images.githubusercontent.com/7221739/221348267-58acfa3b-8d11-46e3-b4b2-b1426483f375.png)
+![Architecture-Diagram](https://user-images.githubusercontent.com/7221739/221416201-8473c385-de37-486f-b21f-3bf2e626bfb9.png)
 
 ## Installation
 
@@ -224,9 +224,16 @@ $ ./scripts/run.sh
 
 ### 8. Test the service
 
-The example how to call the gRPC service written in Golang can be seen on this [example-client](scripts/example-client) file.
+The example how to call the gRPC service written in Golang can be seen on these 6 examples:
 
-> NOTE: To test this service need the migration to be done. After that you can choose the User ID's from 1 to 5.
+1. [upload-from-file](scripts/upload-from-file/main.go) file.
+2. [upload-from-url](scripts/upload-from-url/main.go) file.
+3. [concurrent-upload-file](scripts/concurrent-upload-file/main.go) file.
+4. [concurrent-upload-url](scripts/concurrent-upload-url/main.go) file.
+5. [list-file](scripts/list-file/main.go) file.
+6. [delete-file](scripts/delete-file/main.go) file.
+
+> NOTE: To test this service need MinIO running in order to store the file.
  
 If you want to test by GUI client, you can use either BloomRPC (although already no longer active) or Postman.
 For the detail please visit these links:
@@ -288,7 +295,7 @@ By default, HTTP server running on gRPC port + 1, if the gRPC port is 8080, then
 > 
 > `docker-compose -f ./development/docker-compose.yml up`
 >
-> Then you will have all services running like `minio`, `createbuckets`, jaeger` and run `file-storage` server.
+> Then you will have all services running like `minio`, `createbuckets`, `createbackup`,`jaeger` and run `file-storage` server.
 
 ## CLI
 
@@ -358,7 +365,6 @@ Here are some possibility issues when we're trying to run the `ghz` commands:
 To fix this issue, you need to change some file in proto file:
 
 ```protobuf
-import "validate/validate.proto";
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 ```
@@ -366,7 +372,6 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 To this:
 
 ```protobuf
-// import "validate/validate.proto";
 // import "google/api/annotations.proto";
 // import "protoc-gen-openapiv2/options/annotations.proto";
 ```
@@ -383,19 +388,10 @@ Then, you can run this `ghz` command to do Load Testing for specific RPC, for th
 
 #### 1. Upload RPC:
 
-> NOTE: because the Upload RPC using stream, it might be difficult and should prepare test data.
-> Another way to have a concurrent test, you can run the prepared scripts here:
-
-Upload from File:
-
-```sh
-go run ./scripts/concurrent-upload-file/main.go
+```shell
+ghz --insecure --proto ./api/proto/service.proto --call FileStorageService.Upload -d '{ "type": 1, "filename": "test.txt", "bucket": "default", "file": { "data": "dGVzdA==", "offset": 0 } }' 0.0.0.0:8080 -O html -o load_testing_upload_file.html
 ```
 
-Upload from URL:
-```sh
-go run ./scripts/concurrent-upload-url/main.go
-```
 
 #### 2. List RPC:
 
@@ -404,9 +400,6 @@ ghz --insecure --proto ./api/proto/service.proto --call FileStorageService.List 
 ```
 
 #### 3. Delete RPC:
-
-> NOTE: doing Delete means the data should exist. It might be having the test data prepared.
-> Will updates this part later.
 
 ```sh
 ghz --insecure --proto ./api/proto/service.proto --call FileStorageService.Delete -d '{ "bucket": "default", "object": "file.txt" }' 0.0.0.0:8080 -O html -o load_testing_delete_file.html
