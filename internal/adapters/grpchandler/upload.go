@@ -9,7 +9,7 @@ import (
 	"time"
 
 	rpc "github.com/moemoe89/file-storage/api/go/grpc"
-	"github.com/moemoe89/file-storage/pkg/diskstorage"
+	"github.com/moemoe89/file-storage/pkg/downloadfile"
 
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
@@ -20,13 +20,11 @@ func (h *fileStorageHandler) Upload(stream rpc.FileStorageService_UploadServer) 
 	// Initialize context from stream Context.
 	var ctx = stream.Context()
 
-	// Initialize diskstorage package.
-	f, err := diskstorage.New()
-	if err != nil {
-		return err
+	fd := &fileData{
+		id:         uuid.New().String(),
+		firstChunk: true,
+		buf:        new(bytes.Buffer),
 	}
-
-	fd := &fileData{id: uuid.New().String(), firstChunk: true}
 
 	for {
 		// Handle if the Context is Done.
@@ -47,7 +45,7 @@ func (h *fileStorageHandler) Upload(stream rpc.FileStorageService_UploadServer) 
 
 			switch chunk.GetType() {
 			case rpc.UploadType_UPLOAD_TYPE_URL:
-				return h.uploadFromURL(ctx, stream, chunk, f, fd)
+				return h.uploadFromURL(ctx, stream, chunk, fd)
 			case rpc.UploadType_UPLOAD_TYPE_FILE:
 				fd.contentType = mimetype.Detect(chunk.GetFile().GetData()).String()
 
@@ -63,7 +61,7 @@ func (h *fileStorageHandler) Upload(stream rpc.FileStorageService_UploadServer) 
 
 		// Handle the end of file stream.
 		if errors.Is(err, io.EOF) {
-			return h.endStream(ctx, stream, f, fd)
+			return h.endStream(ctx, stream, fd)
 		}
 
 		if err != nil {
@@ -80,7 +78,7 @@ func (h *fileStorageHandler) Upload(stream rpc.FileStorageService_UploadServer) 
 		fd.offset += int64(len(chunk.GetFile().GetData()))
 
 		// Writes the chunk data to buffer.
-		err = f.Write(chunk.GetFile().GetData())
+		_, err = fd.buf.Write(chunk.GetFile().GetData())
 		if err != nil {
 			return err
 		}
@@ -116,10 +114,14 @@ func (h *fileStorageHandler) uploadFromURL(
 	ctx context.Context,
 	stream rpc.FileStorageService_UploadServer,
 	chunk *rpc.UploadRequest,
-	f diskstorage.DiskStorage,
 	fd *fileData,
 ) error {
-	fileUpload, err := f.DownloadByte(ctx, chunk.GetUrl())
+	df, err := downloadfile.New()
+	if err != nil {
+		return err
+	}
+
+	fileUpload, err := df.DownloadByte(ctx, chunk.GetUrl())
 	if err != nil {
 		return err
 	}
@@ -145,18 +147,15 @@ func (h *fileStorageHandler) uploadFromURL(
 func (h *fileStorageHandler) endStream(
 	ctx context.Context,
 	stream rpc.FileStorageService_UploadServer,
-	f diskstorage.DiskStorage,
 	fd *fileData,
 ) error {
 	// Reset the buffer.
-	defer f.ResetBuffer()
-
-	fileUpload := f.GetBuffer()
+	defer fd.buf.Reset()
 
 	fd.size = fd.offset
 
 	// Uploads to Google Cloud Storage.
-	cloudFile, err := h.uc.Upload(ctx, fileUpload, fd.bucket, fd.filename, time.Time{})
+	cloudFile, err := h.uc.Upload(ctx, fd.buf, fd.bucket, fd.filename, time.Time{})
 	if err != nil {
 		return err
 	}

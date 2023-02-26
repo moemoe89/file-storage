@@ -1,6 +1,8 @@
 package grpchandler
 
 import (
+	"bytes"
+
 	rpc "github.com/moemoe89/file-storage/api/go/grpc"
 	"github.com/moemoe89/file-storage/internal/usecases"
 	"github.com/moemoe89/file-storage/pkg/grpchealth"
@@ -45,6 +47,8 @@ type fileData struct {
 	size int64
 	// firstChunk is a flag to know the stream is first chunk or not.
 	firstChunk bool
+	// buf is a variable-sized buffer for the uploaded file.
+	buf *bytes.Buffer
 }
 
 const (
