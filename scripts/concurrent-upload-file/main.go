@@ -64,5 +64,6 @@ func main() {
 		log.Fatal(err)
 	default:
 		close(errChan)
+		log.Printf("### Uploading finished!! ###\n")
 	}
 }
