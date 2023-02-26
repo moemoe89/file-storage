@@ -299,8 +299,7 @@ You will have a binary named `fs-store`.
 > NOTE:
 > If the binary is not in your PATH, you need to run it directly like this: ./fs-store list-files
 
-
-Thenn, here are several commands available:
+Then, here are several commands available:
 
 #### File Upload
 ```shell
@@ -312,6 +311,9 @@ fs-store -source=url file-upload /path/test.txt
 
 // Use specific bucket
 fs-store -bucket=my-bucket file-upload /path/test.txt
+
+// Use specific filename
+fs-store -filename=my-file.txt file-upload /path/test.txt
 
 // Use validations
 fs-store -content_type=image/jpeg,image/png -max_size=1000 file-upload /path/test.txt
@@ -335,7 +337,6 @@ file-storage file-delete test.txt
 file-storage -bucket=my-bucket file-delete test.txt
 ```
 
-
 ## Project Structure
 
 This project follow https://github.com/golang-standards/project-layout
@@ -350,6 +351,7 @@ However, for have a clear direction when working in this project, here are some 
 * [internal](internal): internal code that can't be shared.
   * [internal/adapters/grpchandler](internal/adapters/grpchandler): adapter layer that serve into gRPC service.
   * [internal/di](internal/di): dependencies injection for connecting each layer.
+  * [internal/usecases](internal/usecases): business logic that connect to repository layer, RPC & HTTP client, etc.
 * [pkg](pkg): package code that can be shared.
 * [scripts](scripts): shell script, go script to help build or testing something.
 * [tools](tools): package that need to store on go.mod in order to easily do installation.
