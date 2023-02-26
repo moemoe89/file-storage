@@ -8,7 +8,12 @@ import (
 
 // List lists the files by given bucket name.
 func (h *fileStorageHandler) List(ctx context.Context, req *rpc.ListRequest) (*rpc.ListResponse, error) {
-	objects, err := h.uc.List(ctx, req.GetBucket())
+	bucket := req.GetBucket()
+	if bucket == "" {
+		bucket = defaultBucket
+	}
+
+	objects, err := h.uc.List(ctx, bucket)
 	if err != nil {
 		return nil, err
 	}

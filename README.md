@@ -2,7 +2,7 @@
 
 ---
 
-[![CI Workflow](https://github.com/moemoe89/file-storage/actions/workflows/ci.yml/badge.svg)](https://github.com/moemoe89/file-storage/actions/workflows/ci.yml) <!-- start-coverage --><img src="https://img.shields.io/badge/coverage-63.3%25-yellow"><!-- end-coverage -->
+[![CI Workflow](https://github.com/moemoe89/file-storage/actions/workflows/ci.yml/badge.svg)](https://github.com/moemoe89/file-storage/actions/workflows/ci.yml) <!-- start-coverage --><img src="https://img.shields.io/badge/coverage-63.5%25-yellow"><!-- end-coverage -->
 
 File Storage Service handles upload, list and delete related files data into storage.
 
@@ -24,8 +24,10 @@ File Storage Service handles upload, list and delete related files data into sto
     - [3. Instrumentation](#3-instrumentation)
     - [4. Unit Test](#4-unit-test)
     - [5. Linter](#5-linter)
-    - [6. Run the service](#6-run-the-service)
-    - [7. Test the service](#7-test-the-service)
+    - [6. Mock](#6-mock)
+    - [7. Run the service](#7-run-the-service)
+    - [8. Test the service](#8-test-the-service)
+    - [9. Load Testing](#9-load-testing)
 - [CLI](#cli)
 - [Project Structure](#project-structure)
 - [GitHub Actions CI](#github-actions-ci)
@@ -44,6 +46,7 @@ File Storage Service handles upload, list and delete related files data into sto
 | moq                       | [mockgen](https://github.com/golang/mock)                                                                            |
 | Linter                    | [GolangCI-Lint](https://github.com/golangci/golangci-lint)                                                           |
 | Testing                   | [testing](https://golang.org/pkg/testing) and [testify/assert](https://godoc.org/github.com/stretchr/testify/assert) |
+| Load Testing              | [ghz](https://ghz.sh)                                                                                                |
 | API                       | [gRPC](https://grpc.io/docs/tutorials/basic/go) and [gRPC-Gateway](https://github.com/grpc-ecosystem/grpc-gateway)   |
 | CLI                       | [flag](https://pkg.go.dev/flag)                                                                                      |
 | Application Architecture  | [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)                   |
@@ -336,6 +339,77 @@ file-storage file-delete test.txt
 
 // With specific bucket
 file-storage -bucket=my-bucket file-delete test.txt
+```
+
+### 9. Load Testing
+
+In order to make sure the service ready to handle a big traffic, it will better if we can do Load Testing to see the performance.
+
+Since the service running in gRPC, we need the tool that support to do HTTP2 request.
+In this case we can use https://ghz.sh/ because it is very simple and can generate various output report type.
+
+> NOTE: Like importing the proto file to BloomRPC / Postman,
+> when running the `ghz` there's will be issue shown due to the tool can't read the path & validate lib.
+
+Here are some possibility issues when we're trying to run the `ghz` commands:
+* `./api/proto/service.proto:5:8: open api/proto/proto/entity.proto: no such file or directory`
+* `./api/proto/service.proto:7:8: open api/proto/validate/validate.proto: no such file or directory`
+
+To fix this issue, you need to change some file in proto file:
+
+```protobuf
+import "validate/validate.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+```
+
+To this:
+
+```protobuf
+// import "validate/validate.proto";
+// import "google/api/annotations.proto";
+// import "protoc-gen-openapiv2/options/annotations.proto";
+```
+
+and remove gRPC Gateway related annotations:
+
+```protobuf
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  ...
+};
+```
+
+Then, you can run this `ghz` command to do Load Testing for specific RPC, for the example:
+
+#### 1. Upload RPC:
+
+> NOTE: because the Upload RPC using stream, it might be difficult and should prepare test data.
+> Another way to have a concurrent test, you can run the prepared scripts here:
+
+Upload from File:
+
+```sh
+go run ./scripts/concurrent-upload-file/main.go
+```
+
+Upload from URL:
+```sh
+go run ./scripts/concurrent-upload-url/main.go
+```
+
+#### 2. List RPC:
+
+```sh
+ghz --insecure --proto ./api/proto/service.proto --call FileStorageService.List -d '{ "bucket": "default" }' 0.0.0.0:8080 -O html -o load_testing_list_files.html
+```
+
+#### 3. Delete RPC:
+
+> NOTE: doing Delete means the data should exist. It might be having the test data prepared.
+> Will updates this part later.
+
+```sh
+ghz --insecure --proto ./api/proto/service.proto --call FileStorageService.Delete -d '{ "bucket": "default", "object": "file.txt" }' 0.0.0.0:8080 -O html -o load_testing_delete_file.html
 ```
 
 ## Project Structure
