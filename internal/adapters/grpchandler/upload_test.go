@@ -131,6 +131,57 @@ func TestFileStorageServer_Upload(t *testing.T) {
 				},
 			}
 		},
+		"Given valid request of Upload file with empty filename and bucket, When UC executed successfully, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
+			ctx := context.Background()
+
+			args := args{
+				ctx: ctx,
+				req: &rpc.UploadRequest{
+					Type: rpc.UploadType_UPLOAD_TYPE_FILE,
+					Validation: &rpc.Validation{
+						ContentTypes: []string{"text/plain"},
+						MaxSize:      0,
+					},
+				},
+				mock: &mockFileStorageService_UploadServer{
+					ctx:  ctx,
+					req:  make(chan *rpc.UploadRequest, 10),
+					resp: make(chan *rpc.UploadResponse, 10),
+				},
+				file: strings.NewReader("my request"),
+			}
+
+			want := &cloudstorage.CloudFile{
+				ObjectName:      args.req.GetFilename(),
+				Size:            1024,
+				ContentType:     "image/jpeg",
+				StorageLocation: args.req.GetBucket() + "/" + args.req.GetFilename(),
+			}
+
+			ucMock := usecases.NewGoMockFileStorageUsecase(ctrl)
+			ucMock.EXPECT().Upload(args.ctx, args.file, args.req.GetBucket(), args.req.GetFilename(), time.Time{}).Return(want, nil).AnyTimes()
+
+			return test{
+				fields: fields{
+					uc: ucMock,
+				},
+				args:    args,
+				wantErr: nil,
+
+				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
+					t.Helper()
+
+					err := m.SendFromClient(req)
+					assert.NoError(t, err)
+				},
+				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
+					t.Helper()
+
+					close(m.req)
+					close(m.resp)
+				},
+			}
+		},
 		"Given valid request of Upload file without Content-Types, When UC executed successfully, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 
