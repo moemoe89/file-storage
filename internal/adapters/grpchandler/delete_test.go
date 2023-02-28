@@ -48,6 +48,26 @@ func TestFileStorageServer_Delete(t *testing.T) {
 				wantErr: nil,
 			}
 		},
+		"Given valid request of Delete file with empty bucket, When UC executed successfully, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
+			ctx := context.Background()
+
+			args := args{
+				ctx:    ctx,
+				object: "object",
+			}
+
+			ucMock := usecases.NewGoMockFileStorageUsecase(ctrl)
+			ucMock.EXPECT().Delete(args.ctx, "default", args.object).Return(nil)
+
+			return test{
+				fields: fields{
+					uc: ucMock,
+				},
+				args:    args,
+				want:    new(rpc.Empty),
+				wantErr: nil,
+			}
+		},
 		"Given valid request of Delete file, When UC failed to executed, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 

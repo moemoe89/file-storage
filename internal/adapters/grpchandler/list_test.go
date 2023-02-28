@@ -52,6 +52,31 @@ func TestFileStorageServer_List(t *testing.T) {
 				wantErr: nil,
 			}
 		},
+		"Given valid request of List file with empty bucket, When UC executed successfully, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
+			ctx := context.Background()
+
+			args := args{
+				ctx: ctx,
+			}
+
+			files := []string{"file1", "file2"}
+
+			want := &rpc.ListResponse{
+				Files: files,
+			}
+
+			ucMock := usecases.NewGoMockFileStorageUsecase(ctrl)
+			ucMock.EXPECT().List(args.ctx, "default").Return(files, nil)
+
+			return test{
+				fields: fields{
+					uc: ucMock,
+				},
+				args:    args,
+				want:    want,
+				wantErr: nil,
+			}
+		},
 		"Given valid request of List file, When UC failed to executed, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
 			ctx := context.Background()
 
