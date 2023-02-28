@@ -130,7 +130,7 @@ func (h *fileStorageHandler) uploadFromURL(
 	// assign size of the file.
 	fd.size = int64(len(fileUpload))
 
-	// Uploads to Google Cloud Storage.
+	// Uploads to MinIO Storage.
 	cloudFile, err := h.uc.Upload(ctx, bytes.NewReader(fileUpload), fd.bucket, fd.filename, time.Time{})
 	if err != nil {
 		return err
@@ -155,7 +155,7 @@ func (h *fileStorageHandler) endStream(
 
 	fd.size = fd.offset
 
-	// Uploads to Google Cloud Storage.
+	// Uploads to MinIO Storage.
 	cloudFile, err := h.uc.Upload(ctx, fd.buf, fd.bucket, fd.filename, time.Time{})
 	if err != nil {
 		return err
