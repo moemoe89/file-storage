@@ -313,6 +313,44 @@ func TestFileStorageServer_Upload(t *testing.T) {
 				},
 			}
 		},
+		"Given valid request of Upload URL, When it executed with invalid URL, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
+			ctx := context.Background()
+
+			args := args{
+				ctx: ctx,
+				req: &rpc.UploadRequest{
+					Type:     rpc.UploadType_UPLOAD_TYPE_URL,
+					Filename: "object",
+					Bucket:   "bucket",
+					Detail: &rpc.UploadRequest_Url{
+						Url: "http://test.com/test.txt",
+					},
+				},
+				mock: &mockFileStorageService_UploadServer{
+					ctx:  ctx,
+					req:  make(chan *rpc.UploadRequest, 10),
+					resp: make(chan *rpc.UploadResponse, 10),
+				},
+				file: strings.NewReader("my request"),
+			}
+
+			return test{
+				args:    args,
+				wantErr: errors.New("error"),
+				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
+					t.Helper()
+
+					err := m.SendFromClient(req)
+					assert.NoError(t, err)
+				},
+				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
+					t.Helper()
+
+					close(m.req)
+					close(m.resp)
+				},
+			}
+		},
 	}
 
 	for name, testFn := range tests {
