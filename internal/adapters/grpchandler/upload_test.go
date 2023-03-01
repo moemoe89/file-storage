@@ -69,7 +69,6 @@ func TestFileStorageServer_Upload(t *testing.T) {
 		ctx  context.Context
 		req  *rpc.UploadRequest
 		mock *mockFileStorageService_UploadServer
-		file io.Reader
 	}
 
 	type test struct {
@@ -80,10 +79,34 @@ func TestFileStorageServer_Upload(t *testing.T) {
 		afterFunc  func(*testing.T, *mockFileStorageService_UploadServer)
 	}
 
+	defaultAfterFunc := func(t *testing.T, m *mockFileStorageService_UploadServer) {
+		t.Helper()
+
+		close(m.req)
+		close(m.resp)
+	}
+
+	defaultBeforeFunc := func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
+		t.Helper()
+
+		err := m.SendFromClient(req)
+		assert.NoError(t, err)
+	}
+
+	defaultError := errors.New("error")
+
+	ctx := context.Background()
+
+	defaultMock := func() *mockFileStorageService_UploadServer {
+		return &mockFileStorageService_UploadServer{
+			ctx:  ctx,
+			req:  make(chan *rpc.UploadRequest, 1),
+			resp: make(chan *rpc.UploadResponse, 1),
+		}
+	}
+
 	tests := map[string]func(t *testing.T, ctrl *gomock.Controller) test{
 		"Given valid request of Upload file, When it executed successfully with Content-Type validation, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
-			ctx := context.Background()
-
 			args := args{
 				ctx: ctx,
 				req: &rpc.UploadRequest{
@@ -94,28 +117,14 @@ func TestFileStorageServer_Upload(t *testing.T) {
 						ContentTypes: []string{"text/plain"},
 					},
 				},
-				mock: &mockFileStorageService_UploadServer{
-					ctx:  ctx,
-					req:  make(chan *rpc.UploadRequest, 1),
-					resp: make(chan *rpc.UploadResponse, 1),
-				},
+				mock: defaultMock(),
 			}
 
 			return test{
-				args:    args,
-				wantErr: nil,
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				args:       args,
+				wantErr:    nil,
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 		"Given valid request of Upload file, When it executed with context canceled, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
@@ -132,28 +141,14 @@ func TestFileStorageServer_Upload(t *testing.T) {
 						ContentTypes: []string{"text/plain"},
 					},
 				},
-				mock: &mockFileStorageService_UploadServer{
-					ctx:  ctx,
-					req:  make(chan *rpc.UploadRequest, 1),
-					resp: make(chan *rpc.UploadResponse, 1),
-				},
+				mock: defaultMock(),
 			}
 
 			return test{
-				args:    args,
-				wantErr: nil,
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				args:       args,
+				wantErr:    nil,
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 		"Given valid request of Upload file, When it executed with context error, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
@@ -170,28 +165,14 @@ func TestFileStorageServer_Upload(t *testing.T) {
 						ContentTypes: []string{"text/plain"},
 					},
 				},
-				mock: &mockFileStorageService_UploadServer{
-					ctx:  ctx,
-					req:  make(chan *rpc.UploadRequest, 1),
-					resp: make(chan *rpc.UploadResponse, 1),
-				},
+				mock: defaultMock(),
 			}
 
 			return test{
-				args:    args,
-				wantErr: context.DeadlineExceeded,
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				args:       args,
+				wantErr:    context.DeadlineExceeded,
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 		"Given valid request of Upload file, When it failed to send the stream response, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
@@ -211,25 +192,15 @@ func TestFileStorageServer_Upload(t *testing.T) {
 					ctx:     ctx,
 					req:     make(chan *rpc.UploadRequest, 1),
 					resp:    make(chan *rpc.UploadResponse, 1),
-					errSend: errors.New("error"),
+					errSend: defaultError,
 				},
 			}
 
 			return test{
-				args:    args,
-				wantErr: errors.New("error"),
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				args:       args,
+				wantErr:    defaultError,
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 		"Given valid request of Upload file, When it executed successfully with empty filename and bucket, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
@@ -240,28 +211,14 @@ func TestFileStorageServer_Upload(t *testing.T) {
 				req: &rpc.UploadRequest{
 					Type: rpc.UploadType_UPLOAD_TYPE_FILE,
 				},
-				mock: &mockFileStorageService_UploadServer{
-					ctx:  ctx,
-					req:  make(chan *rpc.UploadRequest, 1),
-					resp: make(chan *rpc.UploadResponse, 1),
-				},
+				mock: defaultMock(),
 			}
 
 			return test{
-				args:    args,
-				wantErr: nil,
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				args:       args,
+				wantErr:    nil,
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 		"Given valid request of Upload file, When it executed successfully without Content-Types, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
@@ -274,28 +231,14 @@ func TestFileStorageServer_Upload(t *testing.T) {
 					Filename: "object",
 					Bucket:   "bucket",
 				},
-				mock: &mockFileStorageService_UploadServer{
-					ctx:  ctx,
-					req:  make(chan *rpc.UploadRequest, 1),
-					resp: make(chan *rpc.UploadResponse, 1),
-				},
+				mock: defaultMock(),
 			}
 
 			return test{
-				args:    args,
-				wantErr: nil,
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				args:       args,
+				wantErr:    nil,
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 		"Given valid request of Upload file, When it executed with invalid Content-Types, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
@@ -311,28 +254,14 @@ func TestFileStorageServer_Upload(t *testing.T) {
 					Filename: "object",
 					Bucket:   "bucket",
 				},
-				mock: &mockFileStorageService_UploadServer{
-					ctx:  ctx,
-					req:  make(chan *rpc.UploadRequest, 1),
-					resp: make(chan *rpc.UploadResponse, 1),
-				},
+				mock: defaultMock(),
 			}
 
 			return test{
-				args:    args,
-				wantErr: fmt.Errorf("file mime type: %s doesn't match with the target: %v", "text/plain", []string{"image/jpeg"}),
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				args:       args,
+				wantErr:    fmt.Errorf("file mime type: %s doesn't match with the target: %v", "text/plain", []string{"image/jpeg"}),
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 		"Given valid request of Upload file, When it executed with mismatch offset, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
@@ -351,28 +280,14 @@ func TestFileStorageServer_Upload(t *testing.T) {
 						},
 					},
 				},
-				mock: &mockFileStorageService_UploadServer{
-					ctx:  ctx,
-					req:  make(chan *rpc.UploadRequest, 1),
-					resp: make(chan *rpc.UploadResponse, 1),
-				},
+				mock: defaultMock(),
 			}
 
 			return test{
-				args:    args,
-				wantErr: fmt.Errorf("unexpected offset, got %d, want %d", 1, 0),
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				args:       args,
+				wantErr:    fmt.Errorf("unexpected offset, got %d, want %d", 1, 0),
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 		"Given valid request of Upload URL, When it executed successfully, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
@@ -390,11 +305,7 @@ func TestFileStorageServer_Upload(t *testing.T) {
 						Url: targetURL,
 					},
 				},
-				mock: &mockFileStorageService_UploadServer{
-					ctx:  ctx,
-					req:  make(chan *rpc.UploadRequest, 1),
-					resp: make(chan *rpc.UploadResponse, 1),
-				},
+				mock: defaultMock(),
 			}
 
 			byteData := []byte(`byte`)
@@ -418,19 +329,9 @@ func TestFileStorageServer_Upload(t *testing.T) {
 					uc: ucMock,
 					df: ucDownloadfile,
 				},
-				wantErr: nil,
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				wantErr:    nil,
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 		"Given valid request of Upload URL, When failed to upload, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
@@ -448,11 +349,7 @@ func TestFileStorageServer_Upload(t *testing.T) {
 						Url: targetURL,
 					},
 				},
-				mock: &mockFileStorageService_UploadServer{
-					ctx:  ctx,
-					req:  make(chan *rpc.UploadRequest, 1),
-					resp: make(chan *rpc.UploadResponse, 1),
-				},
+				mock: defaultMock(),
 			}
 
 			byteData := []byte(`byte`)
@@ -461,7 +358,7 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			ucDownloadfile.EXPECT().DownloadByte(args.ctx, targetURL).Return(byteData, nil).AnyTimes()
 
 			ucMock := usecases.NewGoMockFileStorageUsecase(ctrl)
-			ucMock.EXPECT().Upload(args.ctx, bytes.NewReader(byteData), args.req.GetBucket(), args.req.GetFilename(), time.Time{}).Return(nil, errors.New("error")).AnyTimes()
+			ucMock.EXPECT().Upload(args.ctx, bytes.NewReader(byteData), args.req.GetBucket(), args.req.GetFilename(), time.Time{}).Return(nil, defaultError).AnyTimes()
 
 			return test{
 				args: args,
@@ -469,19 +366,9 @@ func TestFileStorageServer_Upload(t *testing.T) {
 					uc: ucMock,
 					df: ucDownloadfile,
 				},
-				wantErr: errors.New("error"),
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				wantErr:    defaultError,
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 		"Given valid request of Upload URL, When failed to execute download byte, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
@@ -499,34 +386,20 @@ func TestFileStorageServer_Upload(t *testing.T) {
 						Url: targetURL,
 					},
 				},
-				mock: &mockFileStorageService_UploadServer{
-					ctx:  ctx,
-					req:  make(chan *rpc.UploadRequest, 1),
-					resp: make(chan *rpc.UploadResponse, 1),
-				},
+				mock: defaultMock(),
 			}
 
 			ucDownloadfile := downloadfile.NewGoMockDownloadFile(ctrl)
-			ucDownloadfile.EXPECT().DownloadByte(args.ctx, targetURL).Return(nil, errors.New("error")).AnyTimes()
+			ucDownloadfile.EXPECT().DownloadByte(args.ctx, targetURL).Return(nil, defaultError).AnyTimes()
 
 			return test{
 				args: args,
 				fields: fields{
 					df: ucDownloadfile,
 				},
-				wantErr: errors.New("error"),
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				wantErr:    defaultError,
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 		"Given valid request of Upload, When it executed with EOF error, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
@@ -545,7 +418,6 @@ func TestFileStorageServer_Upload(t *testing.T) {
 					resp:    make(chan *rpc.UploadResponse, 1),
 					errRecv: io.EOF,
 				},
-				file: &bytes.Buffer{},
 			}
 
 			want := &cloudstorage.CloudFile{
@@ -556,26 +428,16 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			}
 
 			ucMock := usecases.NewGoMockFileStorageUsecase(ctrl)
-			ucMock.EXPECT().Upload(args.ctx, args.file, args.req.GetBucket(), args.req.GetFilename(), time.Time{}).Return(want, nil).AnyTimes()
+			ucMock.EXPECT().Upload(args.ctx, &bytes.Buffer{}, args.req.GetBucket(), args.req.GetFilename(), time.Time{}).Return(want, nil).AnyTimes()
 
 			return test{
 				fields: fields{
 					uc: ucMock,
 				},
-				args:    args,
-				wantErr: nil,
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				args:       args,
+				wantErr:    nil,
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 		"Given invalid request of Upload, When it executed, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
@@ -596,20 +458,10 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			}
 
 			return test{
-				args:    args,
-				wantErr: fmt.Errorf("upload type %d is not supported", rpc.UploadType_UPLOAD_TYPE_FILE),
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				args:       args,
+				wantErr:    fmt.Errorf("upload type %d is not supported", rpc.UploadType_UPLOAD_TYPE_FILE),
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 		"Given valid request of Upload, When UC failed to executed, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
@@ -628,30 +480,19 @@ func TestFileStorageServer_Upload(t *testing.T) {
 					resp:    make(chan *rpc.UploadResponse, 1),
 					errRecv: io.EOF,
 				},
-				file: &bytes.Buffer{},
 			}
 
 			ucMock := usecases.NewGoMockFileStorageUsecase(ctrl)
-			ucMock.EXPECT().Upload(args.ctx, args.file, args.req.GetBucket(), args.req.GetFilename(), time.Time{}).Return(nil, errors.New("error")).AnyTimes()
+			ucMock.EXPECT().Upload(args.ctx, &bytes.Buffer{}, args.req.GetBucket(), args.req.GetFilename(), time.Time{}).Return(nil, defaultError).AnyTimes()
 
 			return test{
 				fields: fields{
 					uc: ucMock,
 				},
-				args:    args,
-				wantErr: errors.New("error"),
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				args:       args,
+				wantErr:    defaultError,
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 		"Given valid request of Upload, When it executed with an error, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
@@ -668,25 +509,15 @@ func TestFileStorageServer_Upload(t *testing.T) {
 					ctx:     ctx,
 					req:     make(chan *rpc.UploadRequest, 1),
 					resp:    make(chan *rpc.UploadResponse, 1),
-					errRecv: errors.New("error"),
+					errRecv: defaultError,
 				},
 			}
 
 			return test{
-				args:    args,
-				wantErr: errors.New("error"),
-				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					err := m.SendFromClient(req)
-					assert.NoError(t, err)
-				},
-				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
-					t.Helper()
-
-					close(m.req)
-					close(m.resp)
-				},
+				args:       args,
+				wantErr:    defaultError,
+				beforeFunc: defaultBeforeFunc,
+				afterFunc:  defaultAfterFunc,
 			}
 		},
 	}
