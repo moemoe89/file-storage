@@ -5,6 +5,7 @@ import (
 
 	rpc "github.com/moemoe89/file-storage/api/go/grpc"
 	"github.com/moemoe89/file-storage/internal/usecases"
+	"github.com/moemoe89/file-storage/pkg/downloadfile"
 	"github.com/moemoe89/file-storage/pkg/grpchealth"
 
 	health "google.golang.org/grpc/health/grpc_health_v1"
@@ -17,8 +18,8 @@ type FileStorageServiceServer interface {
 }
 
 // NewFileStorageHandler returns a new gRPC handler that implements FileStorageServiceServer interface.
-func NewFileStorageHandler(uc usecases.FileStorageUsecase) FileStorageServiceServer {
-	return &fileStorageHandler{uc: uc}
+func NewFileStorageHandler(uc usecases.FileStorageUsecase, df downloadfile.DownloadFile) FileStorageServiceServer {
+	return &fileStorageHandler{uc: uc, df: df}
 }
 
 // fileStorageHandler is a struct for handler.
@@ -26,6 +27,7 @@ type fileStorageHandler struct {
 	rpc.UnimplementedFileStorageServiceServer
 	grpchealth.HealthChecker
 	uc usecases.FileStorageUsecase
+	df downloadfile.DownloadFile
 }
 
 type fileData struct {
