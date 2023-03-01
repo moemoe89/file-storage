@@ -356,6 +356,41 @@ func TestFileStorageServer_Upload(t *testing.T) {
 				},
 			}
 		},
+		"Given invalid request of Upload, When it executed, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
+			ctx := context.Background()
+
+			args := args{
+				ctx: ctx,
+				req: &rpc.UploadRequest{
+					Type:     rpc.UploadType_UPLOAD_TYPE_UNSPECIFIED,
+					Filename: "object",
+					Bucket:   "bucket",
+				},
+				mock: &mockFileStorageService_UploadServer{
+					ctx:  ctx,
+					req:  make(chan *rpc.UploadRequest, 1),
+					resp: make(chan *rpc.UploadResponse, 1),
+				},
+				file: &bytes.Buffer{},
+			}
+
+			return test{
+				args:    args,
+				wantErr: fmt.Errorf("upload type %d is not supported", rpc.UploadType_UPLOAD_TYPE_FILE),
+				beforeFunc: func(t *testing.T, req *rpc.UploadRequest, m *mockFileStorageService_UploadServer) {
+					t.Helper()
+
+					err := m.SendFromClient(req)
+					assert.NoError(t, err)
+				},
+				afterFunc: func(t *testing.T, m *mockFileStorageService_UploadServer) {
+					t.Helper()
+
+					close(m.req)
+					close(m.resp)
+				},
+			}
+		},
 	}
 
 	for name, testFn := range tests {

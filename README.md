@@ -2,7 +2,7 @@
 
 ---
 
-[![CI Workflow](https://github.com/moemoe89/file-storage/actions/workflows/ci.yml/badge.svg)](https://github.com/moemoe89/file-storage/actions/workflows/ci.yml) <!-- start-coverage --><img src="https://img.shields.io/badge/coverage-82.3%25-brightgreen"><!-- end-coverage -->
+[![CI Workflow](https://github.com/moemoe89/file-storage/actions/workflows/ci.yml/badge.svg)](https://github.com/moemoe89/file-storage/actions/workflows/ci.yml) <!-- start-coverage --><img src="https://img.shields.io/badge/coverage-83.3%25-brightgreen"><!-- end-coverage -->
 
 File Storage Service handles upload, list and delete related files data into storage.
 
