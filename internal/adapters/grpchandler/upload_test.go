@@ -97,7 +97,7 @@ func TestFileStorageServer_Upload(t *testing.T) {
 
 	ctx := context.Background()
 
-	defaultMock := func() *mockFileStorageService_UploadServer {
+	defaultMock := func(ctx context.Context) *mockFileStorageService_UploadServer {
 		return &mockFileStorageService_UploadServer{
 			ctx:  ctx,
 			req:  make(chan *rpc.UploadRequest, 1),
@@ -117,7 +117,7 @@ func TestFileStorageServer_Upload(t *testing.T) {
 						ContentTypes: []string{"text/plain"},
 					},
 				},
-				mock: defaultMock(),
+				mock: defaultMock(ctx),
 			}
 
 			return test{
@@ -141,7 +141,7 @@ func TestFileStorageServer_Upload(t *testing.T) {
 						ContentTypes: []string{"text/plain"},
 					},
 				},
-				mock: defaultMock(),
+				mock: defaultMock(ctx),
 			}
 
 			return test{
@@ -165,7 +165,7 @@ func TestFileStorageServer_Upload(t *testing.T) {
 						ContentTypes: []string{"text/plain"},
 					},
 				},
-				mock: defaultMock(),
+				mock: defaultMock(ctx),
 			}
 
 			return test{
@@ -176,8 +176,6 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			}
 		},
 		"Given valid request of Upload file, When it failed to send the stream response, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
-			ctx := context.Background()
-
 			args := args{
 				ctx: ctx,
 				req: &rpc.UploadRequest{
@@ -204,14 +202,12 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			}
 		},
 		"Given valid request of Upload file, When it executed successfully with empty filename and bucket, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
-			ctx := context.Background()
-
 			args := args{
 				ctx: ctx,
 				req: &rpc.UploadRequest{
 					Type: rpc.UploadType_UPLOAD_TYPE_FILE,
 				},
-				mock: defaultMock(),
+				mock: defaultMock(ctx),
 			}
 
 			return test{
@@ -222,8 +218,6 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			}
 		},
 		"Given valid request of Upload file, When it executed successfully without Content-Types, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
-			ctx := context.Background()
-
 			args := args{
 				ctx: ctx,
 				req: &rpc.UploadRequest{
@@ -231,7 +225,7 @@ func TestFileStorageServer_Upload(t *testing.T) {
 					Filename: "object",
 					Bucket:   "bucket",
 				},
-				mock: defaultMock(),
+				mock: defaultMock(ctx),
 			}
 
 			return test{
@@ -242,8 +236,6 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			}
 		},
 		"Given valid request of Upload file, When it executed with invalid Content-Types, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
-			ctx := context.Background()
-
 			args := args{
 				ctx: ctx,
 				req: &rpc.UploadRequest{
@@ -254,7 +246,7 @@ func TestFileStorageServer_Upload(t *testing.T) {
 					Filename: "object",
 					Bucket:   "bucket",
 				},
-				mock: defaultMock(),
+				mock: defaultMock(ctx),
 			}
 
 			return test{
@@ -265,8 +257,6 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			}
 		},
 		"Given valid request of Upload file, When it executed with mismatch offset, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
-			ctx := context.Background()
-
 			args := args{
 				ctx: ctx,
 				req: &rpc.UploadRequest{
@@ -280,7 +270,7 @@ func TestFileStorageServer_Upload(t *testing.T) {
 						},
 					},
 				},
-				mock: defaultMock(),
+				mock: defaultMock(ctx),
 			}
 
 			return test{
@@ -291,8 +281,6 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			}
 		},
 		"Given valid request of Upload URL, When it executed successfully, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
-			ctx := context.Background()
-
 			targetURL := "http://test.com/test.txt"
 
 			args := args{
@@ -305,7 +293,7 @@ func TestFileStorageServer_Upload(t *testing.T) {
 						Url: targetURL,
 					},
 				},
-				mock: defaultMock(),
+				mock: defaultMock(ctx),
 			}
 
 			byteData := []byte(`byte`)
@@ -335,8 +323,6 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			}
 		},
 		"Given valid request of Upload URL, When failed to upload, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
-			ctx := context.Background()
-
 			targetURL := "http://test.com/test.txt"
 
 			args := args{
@@ -349,7 +335,7 @@ func TestFileStorageServer_Upload(t *testing.T) {
 						Url: targetURL,
 					},
 				},
-				mock: defaultMock(),
+				mock: defaultMock(ctx),
 			}
 
 			byteData := []byte(`byte`)
@@ -372,8 +358,6 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			}
 		},
 		"Given valid request of Upload URL, When failed to execute download byte, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
-			ctx := context.Background()
-
 			targetURL := "http://test.com/test.txt"
 
 			args := args{
@@ -386,7 +370,7 @@ func TestFileStorageServer_Upload(t *testing.T) {
 						Url: targetURL,
 					},
 				},
-				mock: defaultMock(),
+				mock: defaultMock(ctx),
 			}
 
 			ucDownloadfile := downloadfile.NewGoMockDownloadFile(ctrl)
@@ -403,8 +387,6 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			}
 		},
 		"Given valid request of Upload, When it executed with EOF error, Return no error": func(t *testing.T, ctrl *gomock.Controller) test {
-			ctx := context.Background()
-
 			args := args{
 				ctx: ctx,
 				req: &rpc.UploadRequest{
@@ -441,8 +423,6 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			}
 		},
 		"Given invalid request of Upload, When it executed, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
-			ctx := context.Background()
-
 			args := args{
 				ctx: ctx,
 				req: &rpc.UploadRequest{
@@ -465,8 +445,6 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			}
 		},
 		"Given valid request of Upload, When UC failed to executed, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
-			ctx := context.Background()
-
 			args := args{
 				ctx: ctx,
 				req: &rpc.UploadRequest{
@@ -496,8 +474,6 @@ func TestFileStorageServer_Upload(t *testing.T) {
 			}
 		},
 		"Given valid request of Upload, When it executed with an error, Return error": func(t *testing.T, ctrl *gomock.Controller) test {
-			ctx := context.Background()
-
 			args := args{
 				ctx: ctx,
 				req: &rpc.UploadRequest{
