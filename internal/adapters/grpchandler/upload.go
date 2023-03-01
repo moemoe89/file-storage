@@ -8,11 +8,9 @@ import (
 	"io"
 	"time"
 
-	rpc "github.com/moemoe89/file-storage/api/go/grpc"
-	"github.com/moemoe89/file-storage/pkg/downloadfile"
-
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
+	rpc "github.com/moemoe89/file-storage/api/go/grpc"
 )
 
 // Upload uploads file to storage both request and response as stream.
@@ -116,13 +114,7 @@ func (h *fileStorageHandler) uploadFromURL(
 	chunk *rpc.UploadRequest,
 	fd *fileData,
 ) error {
-	// Initialize downloadfile package.
-	df, err := downloadfile.New()
-	if err != nil {
-		return err
-	}
-
-	fileUpload, err := df.DownloadByte(ctx, chunk.GetUrl())
+	fileUpload, err := h.df.DownloadByte(ctx, chunk.GetUrl())
 	if err != nil {
 		return err
 	}
