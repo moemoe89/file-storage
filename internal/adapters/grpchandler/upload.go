@@ -8,9 +8,10 @@ import (
 	"io"
 	"time"
 
+	rpc "github.com/moemoe89/file-storage/api/go/grpc"
+
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
-	rpc "github.com/moemoe89/file-storage/api/go/grpc"
 )
 
 // Upload uploads file to storage both request and response as stream.
