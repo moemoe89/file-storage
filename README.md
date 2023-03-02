@@ -140,7 +140,6 @@ make docker-protoc
 
 ![MinIO](https://user-images.githubusercontent.com/7221739/222305823-23040742-d07d-48fa-a8d7-b16221bb6ced.png)
 
-
 Instead storing the files to disk, this project use [MinIO](https://min.io) as an Object Storage to store the files.
 You can follow the installation from the official page, or easily run this docker-compose command to setup everything including the bucket. 
 
@@ -311,8 +310,7 @@ By default, HTTP server running on gRPC port + 1, if the gRPC port is 8080, then
 
 ## CLI
 
-![CLI](https://user-images.githubusercontent.com/7221739/222308036-545f1fa6-c51e-4cd2-ac55-e059d636eb29.png)
-
+![CLI](https://user-images.githubusercontent.com/7221739/222310615-da213a6e-eb78-44d2-a8eb-08fb07100f90.png)
 
 This project has CLI to simplify interact with the File-Storage server. You need to build the binary before running the command:
 

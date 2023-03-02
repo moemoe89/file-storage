@@ -13,7 +13,7 @@ import (
 )
 
 // usageText is a message to describe how to use the CLI.
-const usageText = `file-store is a command line interface (CLI) program designed for file operations such as uploading, listing, and deleting files. The program allows users to upload a file either from a local path or a URL, list the uploaded files on the server, and delete them..
+const usageText = `fs-store is a command line interface (CLI) program designed for file operations such as uploading, listing, and deleting files. The program allows users to upload a file either from a local path or a URL, list the uploaded files on the server, and delete them..
 
 In addition to file operations, the program offers an optional --bucket flag to select the target bucket. If the flag is not defined, the program uses the default bucket.
 
