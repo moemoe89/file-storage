@@ -138,6 +138,9 @@ make docker-protoc
 
 ### 2. Object Storage
 
+![MinIO](https://user-images.githubusercontent.com/7221739/222305823-23040742-d07d-48fa-a8d7-b16221bb6ced.png)
+
+
 Instead storing the files to disk, this project use [MinIO](https://min.io) as an Object Storage to store the files.
 You can follow the installation from the official page, or easily run this docker-compose command to setup everything including the bucket. 
 
@@ -159,7 +162,9 @@ $ docker-compose -f ./development/docker-compose.yml up createbackup
 
 ### 3. Instrumentation
 
-This service implements [https://opentelemetry.io/](https://opentelemetry.io/) to enable instrumentation in order to measure the performance.
+![JaegerUI](https://user-images.githubusercontent.com/7221739/222305605-64a77902-8ce9-40b6-9298-5d733f5f1316.png)
+
+This service implements [OpenTelemetry](https://opentelemetry.io/) to enable instrumentation in order to measure the performance.
 The data exported to Jaeger and can be seen in the Jaeger UI [http://localhost:16686](http://localhost:16686)
 
 For running the Jaeger exporter, easily run with docker-compose command:
@@ -248,6 +253,8 @@ Basically you just need to import the [api/proto/service.proto](api/proto/servic
 
 #### BloomRPC
 
+![BloomRPC](https://user-images.githubusercontent.com/7221739/222306402-369e6288-229c-43e4-ad2c-d09c9cb465dc.png)
+
 BloomRPC will have these issues when trying to import the proto file:
 
 ```
@@ -268,6 +275,8 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 
 #### Postman
 
+![Postman](https://user-images.githubusercontent.com/7221739/222306916-56e28d36-1756-4187-b9c6-1bd0e20eda0d.png)
+
 There's some issue when importing to Postman. Basically we need to do the same things like BloomRPC (remove gRPC Gateway related annotations) and disable the protoc annotations import.
 
 ```protobuf
@@ -284,6 +293,9 @@ Also don't forget to set the import path e.g. `{YOUR-DIR}/file-storage/api/proto
 
 #### gRPC-Gateway
 
+![Swagger](https://user-images.githubusercontent.com/7221739/222307821-2f0844cb-9f76-491d-8a1c-1e8158cdc0e7.png)
+
+
 This service has HTTP server built on gRPC-Gateway, if you prefer to test using HTTP instead HTTP2 protocol,
 you can copy the Swagger file here [api/openapiv2/proto/service.swagger.json](api/openapiv2/proto/service.swagger.json) and then copy paste to this URL https://editor.swagger.io/
 
@@ -298,6 +310,9 @@ By default, HTTP server running on gRPC port + 1, if the gRPC port is 8080, then
 > Then you will have all services running like `minio`, `createbuckets`, `createbackup`,`jaeger` and run `file-storage` server.
 
 ## CLI
+
+![CLI](https://user-images.githubusercontent.com/7221739/222308036-545f1fa6-c51e-4cd2-ac55-e059d636eb29.png)
+
 
 This project has CLI to simplify interact with the File-Storage server. You need to build the binary before running the command:
 
@@ -349,6 +364,9 @@ file-storage -bucket=my-bucket file-delete test.txt
 ```
 
 ### 9. Load Testing
+
+![ghz](https://user-images.githubusercontent.com/7221739/222305995-964c6f8e-65c1-4788-9ce5-392a617528c1.png)
+
 
 In order to make sure the service ready to handle a big traffic, it will better if we can do Load Testing to see the performance.
 
@@ -426,6 +444,9 @@ However, for have a clear direction when working in this project, here are some 
 
 ## GitHub Actions CI
 
+![GitHubActionsCI](https://user-images.githubusercontent.com/7221739/222308704-51a26273-e398-47d2-9619-a2b8b4fc0988.png)
+
+
 This project has GitHub Actions CI to do some automation such as:
 
 * [lint](.github/workflows/lint.yml): check the code style.
@@ -437,6 +458,8 @@ This project has GitHub Actions CI to do some automation such as:
 ## Documentation
 
 ### Visualize Code Diagram
+
+![GraphDiagram](https://user-images.githubusercontent.com/7221739/222308530-674b4561-c9fe-4529-acb8-876da7027a18.png)
 
 To help give a better understanding about reading the code
 such as relations with packages and types, here are some diagrams listed
@@ -450,6 +473,8 @@ generated automatically using [https://github.com/ofabry/go-callvis](https://git
 <!-- end diagram doc -->
 
 ### RPC Sequence Diagram
+
+![SequenceDiagram](https://user-images.githubusercontent.com/7221739/222308588-37ebd33e-84db-43ae-a029-0f78b6c8098e.png)
 
 To help give a better understanding about reading the RPC flow
 such as relations with usecases and repositories, here are some sequence diagrams (generated automatically) listed in Markdown file and written in Mermaid JS [https://mermaid-js.github.io/mermaid/](https://mermaid-js.github.io/mermaid/) format.
