@@ -13,7 +13,7 @@ import (
 )
 
 // usageText is a message to describe how to use the CLI.
-const usageText = `fs-store is a command line interface (CLI) program designed for file operations such as uploading, listing, and deleting files. The program allows users to upload a file either from a local path or a URL, list the uploaded files on the server, and delete them..
+const usageText = `fs-store is a command line interface (CLI) program designed for file operations such as uploading, listing, and deleting files. The program allows users to upload a file either from a local path or a URL, list the uploaded files on the server, and delete them.
 
 In addition to file operations, the program offers an optional --bucket flag to select the target bucket. If the flag is not defined, the program uses the default bucket.
 
@@ -50,8 +50,8 @@ var (
 	source = flag.String("source", "file", "Specify the source of upload file. Can be from file or URL. By default it will be upload from file.")
 	// filename is a flag to naming the file when do upload. If not specified, automatically get from file path or URL.
 	filename = flag.String("filename", "", "Specify the file name of upload file. If not specified, automatically get from file path or URL.")
-	// filename is a flag to naming the file when do upload. If not specified, automatically get from file path or URL.
-	contentType = flag.String("content_type", "", "Specify the file name of upload file. If not specified, automatically get from file path or URL.")
+	// contentType is a flag to validates the content-type when do upload. If not specified, no validation will be ignored.
+	contentType = flag.String("content_type", "", "Specify the content type of upload file. If not specified, no validation will be ignored.")
 	// max_size is a flag to validates the max size of file when do upload. If not specified, the value is 0 which mean don't need to validate.
 	maxSize = flag.Int64("max_size", 0, "Specify the validation for max size file of upload file. If not specified, validation will be ignored")
 )
